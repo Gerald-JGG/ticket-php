@@ -1,66 +1,65 @@
 <?php
 require_once __DIR__ . '/../Config/database.php';
-require_once __DIR__ . '/../Models/User.php';
+require_once __DIR__ . '/../Models/Usuario.php';
 
 class AuthController {
     private $db;
-    private $userModel;
+    private $usuarioModel;
     
     public function __construct() {
         $database = new Database();
         $this->db = $database->getConnection();
-        $this->userModel = new User($this->db);
+        $this->usuarioModel = new Usuario($this->db);
     }
     
-    public function register($data) {
-        // Validar que las contraseñas coincidan
-        if ($data['password'] !== $data['password_confirm']) {
-            return ['success' => false, 'message' => 'Las contraseñas no coinciden'];
-        }
-        
-        // Hash de la contraseña
-        $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        
-        // Registrar usuario
-        $userId = $this->userModel->create($data);
-        
-        if ($userId) {
-            // Asignar rol de pasajero por defecto
-            $this->userModel->assignRole($userId, 2); // 2 = Pasajero
-            return ['success' => true, 'message' => 'Usuario registrado exitosamente', 'user_id' => $userId];
-        }
-        
-        return ['success' => false, 'message' => 'Error al registrar usuario'];
-    }
-    
+    /**
+     * Iniciar sesión
+     */
     public function login($username, $password) {
-        $user = $this->userModel->findByUsername($username);
+        $usuario = $this->usuarioModel->findByUsername($username);
         
-        if ($user && password_verify($password, $user['password'])) {
+        if ($usuario && password_verify($password, $usuario['password'])) {
+            // Verificar que el usuario esté activo
+            if (!$usuario['activo']) {
+                return ['success' => false, 'message' => 'Usuario desactivado'];
+            }
+            
             // Iniciar sesión
-            session_start();
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            $_SESSION['first_name'] = $user['first_name'];
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
             
-            // Obtener roles del usuario
-            $roles = $this->userModel->getUserRoles($user['id']);
-            $_SESSION['roles'] = $roles;
+            $_SESSION['user_id'] = $usuario['id'];
+            $_SESSION['username'] = $usuario['username'];
+            $_SESSION['nombre_completo'] = $usuario['nombre_completo'];
+            $_SESSION['rol'] = $usuario['rol'];
             
-            return ['success' => true, 'message' => 'Inicio de sesión exitoso', 'roles' => $roles];
+            return [
+                'success' => true, 
+                'message' => 'Inicio de sesión exitoso',
+                'rol' => $usuario['rol'],
+                'user_id' => $usuario['id']
+            ];
         }
         
         return ['success' => false, 'message' => 'Usuario o contraseña incorrectos'];
     }
     
+    /**
+     * Cerrar sesión
+     */
     public function logout() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
+        session_unset();
         session_destroy();
-        return ['success' => true, 'message' => 'Sesión cerrada'];
+        return ['success' => true, 'message' => 'Sesión cerrada exitosamente'];
     }
     
+    /**
+     * Verificar si hay una sesión activa
+     */
     public function checkAuth() {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -68,14 +67,61 @@ class AuthController {
         return isset($_SESSION['user_id']);
     }
     
-    public function hasRole($roleId) {
+    /**
+     * Verificar si el usuario tiene un rol específico
+     */
+    public function hasRole($rol) {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        if (!isset($_SESSION['roles'])) {
+        if (!isset($_SESSION['rol'])) {
             return false;
         }
-        return in_array($roleId, array_column($_SESSION['roles'], 'role_id'));
+        return $_SESSION['rol'] === $rol;
+    }
+    
+    /**
+     * Obtener información del usuario autenticado
+     */
+    public function getCurrentUser() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (!isset($_SESSION['user_id'])) {
+            return null;
+        }
+        
+        return [
+            'id' => $_SESSION['user_id'],
+            'username' => $_SESSION['username'],
+            'nombre_completo' => $_SESSION['nombre_completo'],
+            'rol' => $_SESSION['rol']
+        ];
+    }
+    
+    /**
+     * Redirigir según el rol del usuario
+     */
+    public function redirectByRole() {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        if (!isset($_SESSION['rol'])) {
+            return 'login.php';
+        }
+        
+        switch ($_SESSION['rol']) {
+            case 'Superadministrador':
+                return 'dashboard/admin.php';
+            case 'Operador':
+                return 'dashboard/operador.php';
+            case 'Usuario':
+                return 'dashboard/usuario.php';
+            default:
+                return 'login.php';
+        }
     }
 }
 ?>
