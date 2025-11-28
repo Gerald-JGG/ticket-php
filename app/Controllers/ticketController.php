@@ -1,338 +1,302 @@
 <?php
-require_once __DIR__ . '/../Config/database.php';
-require_once __DIR__ . '/../Models/Ticket.php';
-require_once __DIR__ . '/../Models/Entrada.php';
 
-class TicketController {
-    private $db;
-    private $ticketModel;
-    private $entradaModel;
-    
-    public function __construct() {
-        $database = new Database();
-        $this->db = $database->getConnection();
-        $this->ticketModel = new Ticket($this->db);
-        $this->entradaModel = new Entrada($this->db);
+namespace App\Controllers;
+
+use App\Core\Controller;
+use App\Models\Ticket;
+use App\Models\Entrada;
+use App\Models\User;
+use App\Models\Categoria;
+use App\Models\Prioridad;
+
+class TicketController extends Controller
+{
+    public function __construct()
+    {
+        if (!isset($_SESSION['user'])) {
+            header('Location: /login');
+            exit;
+        }
     }
-    
-    /**
-     * Crear un nuevo ticket (solo Usuarios)
-     */
-    public function create($data) {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+
+    // Vista para Usuarios
+    public function index()
+    {
+        $user = User::find($_SESSION['user']['id']);
+        
+        if ($user->rol === 'Usuario') {
+            return $this->userDashboard();
+        } elseif ($user->rol === 'Operador') {
+            return $this->operatorDashboard();
+        } else {
+            return $this->adminDashboard();
         }
-        
-        if (!isset($_SESSION['user_id'])) {
-            return ['success' => false, 'message' => 'No autorizado'];
-        }
-        
-        // Verificar que sea un Usuario
-        if ($_SESSION['rol'] !== 'Usuario') {
-            return ['success' => false, 'message' => 'Solo los usuarios pueden crear tickets'];
-        }
-        
-        // Validar datos
-        if (empty($data['titulo']) || empty($data['tipo']) || empty($data['descripcion'])) {
-            return ['success' => false, 'message' => 'Todos los campos son obligatorios'];
-        }
-        
-        // Validar longitud del título
-        if (strlen($data['titulo']) > 200) {
-            return ['success' => false, 'message' => 'El título no puede exceder 200 caracteres'];
-        }
-        
-        // Validar tipo
-        if (!in_array($data['tipo'], ['Petición', 'Incidente'])) {
-            return ['success' => false, 'message' => 'Tipo de solicitud no válido'];
-        }
-        
-        // Crear ticket
-        $data['usuario_creador_id'] = $_SESSION['user_id'];
-        $ticketId = $this->ticketModel->create($data);
-        
-        if ($ticketId) {
-            // Crear la primera entrada (descripción inicial)
-            $entradaData = [
-                'ticket_id' => $ticketId,
-                'autor_id' => $_SESSION['user_id'],
-                'texto' => $data['descripcion'],
-                'estado_anterior' => null,
-                'estado_nuevo' => 'No Asignado'
-            ];
-            
-            $this->entradaModel->create($entradaData);
-            
-            return [
-                'success' => true,
-                'message' => 'Ticket creado exitosamente',
-                'ticket_id' => $ticketId
-            ];
-        }
-        
-        return ['success' => false, 'message' => 'Error al crear ticket'];
     }
-    
-    /**
-     * Obtener mis tickets (Usuario)
-     */
-    public function getMisTickets($estado = null) {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        if (!isset($_SESSION['user_id']) || $_SESSION['rol'] !== 'Usuario') {
-            return ['success' => false, 'message' => 'No autorizado'];
-        }
-        
-        $tickets = $this->ticketModel->getByUsuarioCreador($_SESSION['user_id'], $estado);
-        return ['success' => true, 'tickets' => $tickets];
+
+    private function userDashboard()
+    {
+        $estado = $_GET['estado'] ?? 'todos';
+        $tickets = Ticket::getByUser($_SESSION['user']['id'], $estado);
+        return $this->view('tickets/user_dashboard', [
+            'tickets' => $tickets,
+            'estado' => $estado
+        ]);
     }
-    
-    /**
-     * Obtener tickets no asignados (Operador)
-     */
-    public function getTicketsNoAsignados() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+
+    private function operatorDashboard()
+    {
+        $ticketsNoAsignados = Ticket::getUnassigned();
+        $estado = $_GET['estado'] ?? 'todos';
+        $misTickets = Ticket::getByOperator($_SESSION['user']['id'], $estado);
         
-        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'Operador') {
-            return ['success' => false, 'message' => 'No autorizado'];
-        }
-        
-        $tickets = $this->ticketModel->getNoAsignados();
-        return ['success' => true, 'tickets' => $tickets];
+        return $this->view('tickets/operator_dashboard', [
+            'ticketsNoAsignados' => $ticketsNoAsignados,
+            'misTickets' => $misTickets,
+            'estado' => $estado
+        ]);
     }
-    
-    /**
-     * Obtener mis tickets asignados (Operador)
-     */
-    public function getMisTicketsAsignados($estado = null) {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+
+    private function adminDashboard()
+    {
+        $estado = $_GET['estado'] ?? 'todos';
+        $tipo = $_GET['tipo'] ?? 'todos';
+        $operador = $_GET['operador'] ?? 'todos';
+        $busqueda = $_GET['busqueda'] ?? '';
         
-        if (!isset($_SESSION['user_id']) || $_SESSION['rol'] !== 'Operador') {
-            return ['success' => false, 'message' => 'No autorizado'];
-        }
+        $tickets = Ticket::getAllFiltered($estado, $tipo, $operador, $busqueda);
+        $operadores = User::getOperators();
         
-        $tickets = $this->ticketModel->getByOperadorAsignado($_SESSION['user_id'], $estado);
-        return ['success' => true, 'tickets' => $tickets];
+        return $this->view('tickets/admin_dashboard', [
+            'tickets' => $tickets,
+            'operadores' => $operadores,
+            'estado' => $estado,
+            'tipo' => $tipo,
+            'operador' => $operador,
+            'busqueda' => $busqueda
+        ]);
     }
-    
-    /**
-     * Autoasignar ticket (Operador)
-     */
-    public function autoasignar($ticketId) {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+
+    public function create()
+    {
+        $user = User::find($_SESSION['user']['id']);
         
-        if (!isset($_SESSION['user_id']) || $_SESSION['rol'] !== 'Operador') {
-            return ['success' => false, 'message' => 'No autorizado'];
+        if ($user->rol !== 'Usuario') {
+            header('Location: /tickets');
+            exit;
         }
+
+        $categorias = Categoria::allActive();
+        $prioridades = Prioridad::allActive();
         
-        // Verificar que el ticket existe y está no asignado
-        $ticket = $this->ticketModel->findById($ticketId);
-        if (!$ticket) {
-            return ['success' => false, 'message' => 'Ticket no encontrado'];
-        }
-        
-        if ($ticket['estado'] !== 'No Asignado') {
-            return ['success' => false, 'message' => 'El ticket ya está asignado'];
-        }
-        
-        // Asignar el ticket
-        if ($this->ticketModel->asignarOperador($ticketId, $_SESSION['user_id'])) {
-            // Crear entrada de asignación
-            $entradaData = [
-                'ticket_id' => $ticketId,
-                'autor_id' => $_SESSION['user_id'],
-                'texto' => 'Ticket asignado',
-                'estado_anterior' => 'No Asignado',
-                'estado_nuevo' => 'Asignado'
-            ];
-            $this->entradaModel->create($entradaData);
-            
-            return ['success' => true, 'message' => 'Ticket asignado exitosamente'];
-        }
-        
-        return ['success' => false, 'message' => 'Error al asignar ticket'];
+        return $this->view('tickets/create', [
+            'categorias' => $categorias,
+            'prioridades' => $prioridades
+        ]);
     }
-    
-    /**
-     * Cambiar estado del ticket
-     */
-    public function cambiarEstado($ticketId, $nuevoEstado, $comentario = '') {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+
+    public function store()
+    {
+        $user = User::find($_SESSION['user']['id']);
+        
+        if ($user->rol !== 'Usuario') {
+            header('Location: /tickets');
+            exit;
         }
-        
-        if (!isset($_SESSION['user_id'])) {
-            return ['success' => false, 'message' => 'No autorizado'];
-        }
-        
-        // Obtener ticket
-        $ticket = $this->ticketModel->findById($ticketId);
-        if (!$ticket) {
-            return ['success' => false, 'message' => 'Ticket no encontrado'];
-        }
-        
-        $estadoActual = $ticket['estado'];
-        
-        // Validar transiciones según reglas de negocio
-        $transicionValida = $this->validarTransicion($estadoActual, $nuevoEstado, $ticket);
-        
-        if (!$transicionValida['valida']) {
-            return ['success' => false, 'message' => $transicionValida['mensaje']];
-        }
-        
-        // Cambiar estado
-        if ($this->ticketModel->cambiarEstado($ticketId, $nuevoEstado)) {
-            // Crear entrada con cambio de estado
-            $textoEntrada = !empty($comentario) ? $comentario : "Estado cambiado de '$estadoActual' a '$nuevoEstado'";
-            
-            $entradaData = [
-                'ticket_id' => $ticketId,
-                'autor_id' => $_SESSION['user_id'],
-                'texto' => $textoEntrada,
-                'estado_anterior' => $estadoActual,
-                'estado_nuevo' => $nuevoEstado
-            ];
-            $this->entradaModel->create($entradaData);
-            
-            return ['success' => true, 'message' => 'Estado actualizado exitosamente'];
-        }
-        
-        return ['success' => false, 'message' => 'Error al cambiar estado'];
-    }
-    
-    /**
-     * Validar transiciones de estado según reglas de negocio
-     */
-    private function validarTransicion($estadoActual, $nuevoEstado, $ticket) {
-        $rol = $_SESSION['rol'];
-        $userId = $_SESSION['user_id'];
-        
-        // Reglas para Operador
-        if ($rol === 'Operador') {
-            // Verificar que el ticket esté asignado al operador
-            if ($ticket['operador_asignado_id'] != $userId) {
-                return ['valida' => false, 'mensaje' => 'No puede modificar un ticket que no le está asignado'];
-            }
-            
-            // Transiciones válidas para Operador
-            $transicionesValidas = [
-                'Asignado' => ['En Proceso'],
-                'En Proceso' => ['En Espera de Terceros', 'Solucionado'],
-                'En Espera de Terceros' => ['En Proceso']
-            ];
-            
-            if (!isset($transicionesValidas[$estadoActual]) || 
-                !in_array($nuevoEstado, $transicionesValidas[$estadoActual])) {
-                return ['valida' => false, 'mensaje' => 'Transición de estado no válida'];
-            }
-        }
-        
-        // Reglas para Usuario
-        if ($rol === 'Usuario') {
-            // Solo puede aceptar o rechazar cuando está Solucionado
-            if ($estadoActual !== 'Solucionado') {
-                return ['valida' => false, 'mensaje' => 'Solo puede responder cuando el ticket está solucionado'];
-            }
-            
-            // Verificar que sea el creador del ticket
-            if ($ticket['usuario_creador_id'] != $userId) {
-                return ['valida' => false, 'mensaje' => 'No puede modificar un ticket que no creó'];
-            }
-            
-            // Solo puede cambiar a Cerrado o Asignado
-            if (!in_array($nuevoEstado, ['Cerrado', 'Asignado'])) {
-                return ['valida' => false, 'mensaje' => 'Transición no válida'];
-            }
-        }
-        
-        return ['valida' => true];
-    }
-    
-    /**
-     * Obtener detalle del ticket con historial
-     */
-    public function getDetalle($ticketId) {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        if (!isset($_SESSION['user_id'])) {
-            return ['success' => false, 'message' => 'No autorizado'];
-        }
-        
-        $ticket = $this->ticketModel->findById($ticketId);
-        
-        if (!$ticket) {
-            return ['success' => false, 'message' => 'Ticket no encontrado'];
-        }
-        
-        // Verificar permisos según rol
-        if ($_SESSION['rol'] === 'Usuario' && $ticket['usuario_creador_id'] != $_SESSION['user_id']) {
-            return ['success' => false, 'message' => 'No tiene permisos para ver este ticket'];
-        }
-        
-        if ($_SESSION['rol'] === 'Operador' && 
-            $ticket['operador_asignado_id'] != $_SESSION['user_id'] && 
-            $ticket['estado'] !== 'No Asignado') {
-            return ['success' => false, 'message' => 'No tiene permisos para ver este ticket'];
-        }
-        
-        // Obtener historial
-        $entradas = $this->entradaModel->getByTicketId($ticketId);
-        
-        return [
-            'success' => true,
-            'ticket' => $ticket,
-            'entradas' => $entradas
+
+        $data = [
+            'titulo' => $_POST['titulo'],
+            'tipo' => $_POST['tipo'],
+            'usuario_creador_id' => $_SESSION['user']['id'],
+            'categoria_id' => $_POST['categoria_id'] ?? null,
+            'prioridad_id' => $_POST['prioridad_id'] ?? null
         ];
+
+        $descripcion = $_POST['descripcion'];
+
+        $ticketId = Ticket::create($data);
+        
+        // Crear primera entrada con la descripción
+        Entrada::create([
+            'ticket_id' => $ticketId,
+            'autor_id' => $_SESSION['user']['id'],
+            'texto' => $descripcion,
+            'es_interno' => false
+        ]);
+
+        header('Location: /tickets/' . $ticketId);
     }
-    
-    /**
-     * Obtener todos los tickets (Superadministrador)
-     */
-    public function getAll($filtros = []) {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
-        }
+
+    public function show($id)
+    {
+        $user = User::find($_SESSION['user']['id']);
+        $ticket = Ticket::find($id);
         
-        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'Superadministrador') {
-            return ['success' => false, 'message' => 'No autorizado'];
+        if (!$ticket) {
+            header('Location: /tickets');
+            exit;
         }
+
+        // Verificar permisos
+        if ($user->rol === 'Usuario' && $ticket->usuario_creador_id != $user->id) {
+            header('Location: /tickets');
+            exit;
+        }
+
+        if ($user->rol === 'Operador' && $ticket->operador_asignado_id != $user->id && $ticket->estado !== 'No Asignado') {
+            header('Location: /tickets');
+            exit;
+        }
+
+        $entradas = Entrada::getByTicket($id);
         
-        $tickets = $this->ticketModel->getAll($filtros);
-        return ['success' => true, 'tickets' => $tickets];
+        return $this->view('tickets/show', [
+            'ticket' => $ticket,
+            'entradas' => $entradas,
+            'userRole' => $user->rol
+        ]);
     }
-    
-    /**
-     * Obtener estadísticas
-     */
-    public function getEstadisticas() {
-        if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+
+    public function assign($id)
+    {
+        $user = User::find($_SESSION['user']['id']);
+        
+        if ($user->rol !== 'Operador') {
+            header('Location: /tickets');
+            exit;
         }
+
+        $ticket = Ticket::find($id);
         
-        if (!isset($_SESSION['user_id'])) {
-            return ['success' => false, 'message' => 'No autorizado'];
+        if ($ticket->estado !== 'No Asignado') {
+            header('Location: /tickets');
+            exit;
         }
+
+        Ticket::assignToOperator($id, $_SESSION['user']['id']);
         
-        $usuarioId = $_SESSION['user_id'];
-        $rol = $_SESSION['rol'];
+        // Crear entrada de asignación
+        Entrada::create([
+            'ticket_id' => $id,
+            'autor_id' => $_SESSION['user']['id'],
+            'texto' => 'Ticket asignado',
+            'es_interno' => true,
+            'estado_anterior' => 'No Asignado',
+            'estado_nuevo' => 'Asignado'
+        ]);
+
+        header('Location: /tickets/' . $id);
+    }
+
+    public function updateStatus($id)
+    {
+        $user = User::find($_SESSION['user']['id']);
+        $ticket = Ticket::find($id);
         
-        // Superadministrador ve todas las estadísticas
-        if ($rol === 'Superadministrador') {
-            $usuarioId = null;
-            $rol = null;
+        if ($user->rol !== 'Operador' || $ticket->operador_asignado_id != $user->id) {
+            header('Location: /tickets');
+            exit;
         }
+
+        $nuevoEstado = $_POST['estado'];
+        $comentario = $_POST['comentario'] ?? '';
+
+        // Validar transición de estado
+        if (!Ticket::isValidTransition($ticket->estado, $nuevoEstado)) {
+            header('Location: /tickets/' . $id . '?error=transicion_invalida');
+            exit;
+        }
+
+        Ticket::updateStatus($id, $nuevoEstado);
         
-        $estadisticas = $this->ticketModel->getEstadisticas($usuarioId, $rol);
-        return ['success' => true, 'estadisticas' => $estadisticas];
+        // Crear entrada con cambio de estado
+        Entrada::create([
+            'ticket_id' => $id,
+            'autor_id' => $_SESSION['user']['id'],
+            'texto' => $comentario ?: 'Cambio de estado',
+            'es_interno' => false,
+            'estado_anterior' => $ticket->estado,
+            'estado_nuevo' => $nuevoEstado
+        ]);
+
+        header('Location: /tickets/' . $id);
+    }
+
+    public function addEntry($id)
+    {
+        $user = User::find($_SESSION['user']['id']);
+        $ticket = Ticket::find($id);
+        
+        // Verificar permisos
+        if ($user->rol === 'Usuario' && $ticket->usuario_creador_id != $user->id) {
+            header('Location: /tickets');
+            exit;
+        }
+
+        if ($user->rol === 'Operador' && $ticket->operador_asignado_id != $user->id) {
+            header('Location: /tickets');
+            exit;
+        }
+
+        $texto = $_POST['texto'];
+        $esInterno = isset($_POST['es_interno']) && $user->rol !== 'Usuario' ? 1 : 0;
+
+        Entrada::create([
+            'ticket_id' => $id,
+            'autor_id' => $_SESSION['user']['id'],
+            'texto' => $texto,
+            'es_interno' => $esInterno
+        ]);
+
+        header('Location: /tickets/' . $id);
+    }
+
+    public function acceptSolution($id)
+    {
+        $user = User::find($_SESSION['user']['id']);
+        $ticket = Ticket::find($id);
+        
+        if ($user->rol !== 'Usuario' || $ticket->usuario_creador_id != $user->id || $ticket->estado !== 'Solucionado') {
+            header('Location: /tickets');
+            exit;
+        }
+
+        Ticket::updateStatus($id, 'Cerrado');
+        
+        Entrada::create([
+            'ticket_id' => $id,
+            'autor_id' => $_SESSION['user']['id'],
+            'texto' => 'Solución aceptada',
+            'es_interno' => false,
+            'estado_anterior' => 'Solucionado',
+            'estado_nuevo' => 'Cerrado'
+        ]);
+
+        header('Location: /tickets/' . $id);
+    }
+
+    public function rejectSolution($id)
+    {
+        $user = User::find($_SESSION['user']['id']);
+        $ticket = Ticket::find($id);
+        
+        if ($user->rol !== 'Usuario' || $ticket->usuario_creador_id != $user->id || $ticket->estado !== 'Solucionado') {
+            header('Location: /tickets');
+            exit;
+        }
+
+        $motivo = $_POST['motivo'] ?? 'Solución rechazada';
+
+        Ticket::updateStatus($id, 'Asignado');
+        
+        Entrada::create([
+            'ticket_id' => $id,
+            'autor_id' => $_SESSION['user']['id'],
+            'texto' => $motivo,
+            'es_interno' => false,
+            'estado_anterior' => 'Solucionado',
+            'estado_nuevo' => 'Asignado'
+        ]);
+
+        header('Location: /tickets/' . $id);
     }
 }
