@@ -16,7 +16,7 @@ class UsuarioController extends Controller
 
         // Solo Superadministrador puede acceder
         $user = User::find($_SESSION['user']['id']);
-        if ($user->rol !== 'Superadministrador') {
+        if (!$user || $user->rol !== 'Superadministrador') {
             header('Location: /');
             exit;
         }
