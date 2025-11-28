@@ -46,8 +46,6 @@ spl_autoload_register(function ($class) {
 
 $router = new Router();
 
-// Define routes
-
 // Home Route
 $router->add('GET', '/', 'HomeController@index');
 

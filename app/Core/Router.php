@@ -38,7 +38,7 @@ class Router
 
                 $this->callAction(
                     ...explode('@', $route['controller']),
-                    $matches
+                    params: $matches
                 );
                 return;
             }
