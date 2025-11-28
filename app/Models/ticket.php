@@ -1,229 +1,246 @@
 <?php
-class Ticket {
-    private $conn;
-    private $table = 'tickets';
-    
-    public function __construct($db) {
-        $this->conn = $db;
+
+namespace App\Models;
+
+use App\Core\Model;
+use PDO;
+
+class Ticket extends Model
+{
+    public static function all()
+    {
+        $statement = self::connection()->prepare("
+            SELECT t.*, 
+                   u.nombre_completo as usuario_creador,
+                   o.nombre_completo as operador_asignado,
+                   c.nombre as categoria_nombre,
+                   p.nombre as prioridad_nombre,
+                   p.color as prioridad_color
+            FROM tickets t
+            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
+            LEFT JOIN usuarios o ON t.operador_asignado_id = o.id
+            LEFT JOIN categorias c ON t.categoria_id = c.id
+            LEFT JOIN prioridades p ON t.prioridad_id = p.id
+            ORDER BY t.fecha_creacion DESC
+        ");
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_OBJ);
     }
-    
-    /**
-     * Crear un nuevo ticket
-     */
-    public function create($data) {
-        $query = "INSERT INTO " . $this->table . " 
-                  (titulo, tipo, usuario_creador_id, estado) 
-                  VALUES (:titulo, :tipo, :usuario_creador_id, 'No Asignado')";
-        
-        $stmt = $this->conn->prepare($query);
-        
-        $stmt->bindParam(':titulo', $data['titulo']);
-        $stmt->bindParam(':tipo', $data['tipo']);
-        $stmt->bindParam(':usuario_creador_id', $data['usuario_creador_id']);
-        
-        if ($stmt->execute()) {
-            return $this->conn->lastInsertId();
-        }
-        return false;
+
+    public static function find($id)
+    {
+        $statement = self::connection()->prepare("
+            SELECT t.*, 
+                   u.nombre_completo as usuario_creador,
+                   u.email as usuario_email,
+                   o.nombre_completo as operador_asignado,
+                   o.email as operador_email,
+                   c.nombre as categoria_nombre,
+                   p.nombre as prioridad_nombre,
+                   p.color as prioridad_color
+            FROM tickets t
+            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
+            LEFT JOIN usuarios o ON t.operador_asignado_id = o.id
+            LEFT JOIN categorias c ON t.categoria_id = c.id
+            LEFT JOIN prioridades p ON t.prioridad_id = p.id
+            WHERE t.id = :id
+        ");
+        $statement->bindValue(':id', $id);
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_OBJ);
     }
-    
-    /**
-     * Obtener ticket por ID con información del creador y operador
-     */
-    public function findById($id) {
-        $query = "SELECT t.*, 
-                         uc.nombre_completo as creador_nombre, uc.username as creador_username,
-                         op.nombre_completo as operador_nombre, op.username as operador_username
-                  FROM " . $this->table . " t
-                  INNER JOIN usuarios uc ON t.usuario_creador_id = uc.id
-                  LEFT JOIN usuarios op ON t.operador_asignado_id = op.id
-                  WHERE t.id = :id LIMIT 1";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-        return $stmt->fetch();
-    }
-    
-    /**
-     * Obtener tickets creados por un usuario específico
-     */
-    public function getByUsuarioCreador($usuarioId, $estado = null) {
-        $query = "SELECT t.*, 
-                         op.nombre_completo as operador_nombre
-                  FROM " . $this->table . " t
-                  LEFT JOIN usuarios op ON t.operador_asignado_id = op.id
-                  WHERE t.usuario_creador_id = :usuario_id";
+
+    public static function create($data)
+    {
+        $statement = self::connection()->prepare("
+            INSERT INTO tickets (titulo, tipo, usuario_creador_id, categoria_id, prioridad_id) 
+            VALUES (:titulo, :tipo, :usuario_creador_id, :categoria_id, :prioridad_id)
+        ");
         
-        if ($estado !== null) {
+        $statement->bindValue(':titulo', $data['titulo']);
+        $statement->bindValue(':tipo', $data['tipo']);
+        $statement->bindValue(':usuario_creador_id', $data['usuario_creador_id']);
+        $statement->bindValue(':categoria_id', $data['categoria_id']);
+        $statement->bindValue(':prioridad_id', $data['prioridad_id']);
+        
+        $statement->execute();
+        return self::connection()->lastInsertId();
+    }
+
+    public static function getByUser($userId, $estado = 'todos')
+    {
+        $query = "
+            SELECT t.*, 
+                   c.nombre as categoria_nombre,
+                   p.nombre as prioridad_nombre,
+                   p.color as prioridad_color
+            FROM tickets t
+            LEFT JOIN categorias c ON t.categoria_id = c.id
+            LEFT JOIN prioridades p ON t.prioridad_id = p.id
+            WHERE t.usuario_creador_id = :userId
+        ";
+        
+        if ($estado !== 'todos') {
             $query .= " AND t.estado = :estado";
         }
         
         $query .= " ORDER BY t.fecha_creacion DESC";
         
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':usuario_id', $usuarioId);
+        $statement = self::connection()->prepare($query);
+        $statement->bindValue(':userId', $userId);
         
-        if ($estado !== null) {
-            $stmt->bindParam(':estado', $estado);
+        if ($estado !== 'todos') {
+            $statement->bindValue(':estado', $estado);
         }
         
-        $stmt->execute();
-        return $stmt->fetchAll();
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_OBJ);
     }
-    
-    /**
-     * Obtener tickets no asignados (cola global para operadores)
-     */
-    public function getNoAsignados() {
-        $query = "SELECT t.*, 
-                         u.nombre_completo as creador_nombre, u.username as creador_username
-                  FROM " . $this->table . " t
-                  INNER JOIN usuarios u ON t.usuario_creador_id = u.id
-                  WHERE t.estado = 'No Asignado'
-                  ORDER BY t.fecha_creacion ASC";
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute();
-        return $stmt->fetchAll();
+
+    public static function getUnassigned()
+    {
+        $statement = self::connection()->prepare("
+            SELECT t.*, 
+                   u.nombre_completo as usuario_creador,
+                   c.nombre as categoria_nombre,
+                   p.nombre as prioridad_nombre,
+                   p.color as prioridad_color
+            FROM tickets t
+            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
+            LEFT JOIN categorias c ON t.categoria_id = c.id
+            LEFT JOIN prioridades p ON t.prioridad_id = p.id
+            WHERE t.estado = 'No Asignado'
+            ORDER BY t.fecha_creacion ASC
+        ");
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_OBJ);
     }
-    
-    /**
-     * Obtener tickets asignados a un operador específico
-     */
-    public function getByOperadorAsignado($operadorId, $estado = null) {
-        $query = "SELECT t.*, 
-                         u.nombre_completo as creador_nombre, u.username as creador_username
-                  FROM " . $this->table . " t
-                  INNER JOIN usuarios u ON t.usuario_creador_id = u.id
-                  WHERE t.operador_asignado_id = :operador_id";
+
+    public static function getByOperator($operatorId, $estado = 'todos')
+    {
+        $query = "
+            SELECT t.*, 
+                   u.nombre_completo as usuario_creador,
+                   c.nombre as categoria_nombre,
+                   p.nombre as prioridad_nombre,
+                   p.color as prioridad_color
+            FROM tickets t
+            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
+            LEFT JOIN categorias c ON t.categoria_id = c.id
+            LEFT JOIN prioridades p ON t.prioridad_id = p.id
+            WHERE t.operador_asignado_id = :operatorId
+        ";
         
-        if ($estado !== null) {
+        if ($estado !== 'todos') {
             $query .= " AND t.estado = :estado";
         }
         
         $query .= " ORDER BY t.fecha_actualizacion DESC";
         
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':operador_id', $operadorId);
+        $statement = self::connection()->prepare($query);
+        $statement->bindValue(':operatorId', $operatorId);
         
-        if ($estado !== null) {
-            $stmt->bindParam(':estado', $estado);
+        if ($estado !== 'todos') {
+            $statement->bindValue(':estado', $estado);
         }
         
-        $stmt->execute();
-        return $stmt->fetchAll();
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_OBJ);
     }
-    
-    /**
-     * Obtener todos los tickets (para Superadministrador)
-     */
-    public function getAll($filtros = []) {
-        $query = "SELECT t.*, 
-                         uc.nombre_completo as creador_nombre,
-                         op.nombre_completo as operador_nombre
-                  FROM " . $this->table . " t
-                  INNER JOIN usuarios uc ON t.usuario_creador_id = uc.id
-                  LEFT JOIN usuarios op ON t.operador_asignado_id = op.id
-                  WHERE 1=1";
+
+    public static function getAllFiltered($estado, $tipo, $operador, $busqueda)
+    {
+        $query = "
+            SELECT t.*, 
+                   u.nombre_completo as usuario_creador,
+                   o.nombre_completo as operador_asignado,
+                   c.nombre as categoria_nombre,
+                   p.nombre as prioridad_nombre,
+                   p.color as prioridad_color
+            FROM tickets t
+            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
+            LEFT JOIN usuarios o ON t.operador_asignado_id = o.id
+            LEFT JOIN categorias c ON t.categoria_id = c.id
+            LEFT JOIN prioridades p ON t.prioridad_id = p.id
+            WHERE 1=1
+        ";
         
-        // Aplicar filtros
-        if (isset($filtros['estado'])) {
+        $params = [];
+        
+        if ($estado !== 'todos') {
             $query .= " AND t.estado = :estado";
+            $params[':estado'] = $estado;
         }
-        if (isset($filtros['tipo'])) {
+        
+        if ($tipo !== 'todos') {
             $query .= " AND t.tipo = :tipo";
+            $params[':tipo'] = $tipo;
         }
-        if (isset($filtros['operador_id'])) {
-            $query .= " AND t.operador_asignado_id = :operador_id";
+        
+        if ($operador !== 'todos') {
+            $query .= " AND t.operador_asignado_id = :operador";
+            $params[':operador'] = $operador;
         }
-        if (isset($filtros['busqueda'])) {
-            $query .= " AND (t.id = :busqueda_id OR t.titulo LIKE :busqueda_texto)";
+        
+        if (!empty($busqueda)) {
+            $query .= " AND (t.titulo LIKE :busqueda OR t.id = :id)";
+            $params[':busqueda'] = "%$busqueda%";
+            $params[':id'] = $busqueda;
         }
         
         $query .= " ORDER BY t.fecha_creacion DESC";
         
-        $stmt = $this->conn->prepare($query);
+        $statement = self::connection()->prepare($query);
         
-        // Bind de parámetros de filtro
-        if (isset($filtros['estado'])) {
-            $stmt->bindParam(':estado', $filtros['estado']);
-        }
-        if (isset($filtros['tipo'])) {
-            $stmt->bindParam(':tipo', $filtros['tipo']);
-        }
-        if (isset($filtros['operador_id'])) {
-            $stmt->bindParam(':operador_id', $filtros['operador_id']);
-        }
-        if (isset($filtros['busqueda'])) {
-            $stmt->bindParam(':busqueda_id', $filtros['busqueda']);
-            $busquedaTexto = '%' . $filtros['busqueda'] . '%';
-            $stmt->bindParam(':busqueda_texto', $busquedaTexto);
+        foreach ($params as $key => $value) {
+            $statement->bindValue($key, $value);
         }
         
-        $stmt->execute();
-        return $stmt->fetchAll();
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_OBJ);
     }
-    
-    /**
-     * Asignar ticket a un operador
-     */
-    public function asignarOperador($ticketId, $operadorId) {
-        $query = "UPDATE " . $this->table . " 
-                  SET operador_asignado_id = :operador_id, 
-                      estado = 'Asignado',
-                      fecha_asignacion = NOW()
-                  WHERE id = :ticket_id AND estado = 'No Asignado'";
-        
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':ticket_id', $ticketId);
-        $stmt->bindParam(':operador_id', $operadorId);
-        
-        return $stmt->execute();
+
+    public static function assignToOperator($ticketId, $operatorId)
+    {
+        $statement = self::connection()->prepare("
+            UPDATE tickets 
+            SET operador_asignado_id = :operatorId, 
+                estado = 'Asignado',
+                fecha_asignacion = NOW()
+            WHERE id = :ticketId
+        ");
+        $statement->bindValue(':ticketId', $ticketId);
+        $statement->bindValue(':operatorId', $operatorId);
+        return $statement->execute();
     }
-    
-    /**
-     * Cambiar estado del ticket
-     */
-    public function cambiarEstado($ticketId, $nuevoEstado) {
-        $query = "UPDATE " . $this->table . " 
-                  SET estado = :nuevo_estado";
+
+    public static function updateStatus($ticketId, $nuevoEstado)
+    {
+        $query = "UPDATE tickets SET estado = :estado";
         
-        // Si el estado es Cerrado, registrar fecha de cierre
         if ($nuevoEstado === 'Cerrado') {
             $query .= ", fecha_cierre = NOW()";
         }
         
-        $query .= " WHERE id = :ticket_id";
+        $query .= " WHERE id = :ticketId";
         
-        $stmt = $this->conn->prepare($query);
-        $stmt->bindParam(':ticket_id', $ticketId);
-        $stmt->bindParam(':nuevo_estado', $nuevoEstado);
-        
-        return $stmt->execute();
+        $statement = self::connection()->prepare($query);
+        $statement->bindValue(':ticketId', $ticketId);
+        $statement->bindValue(':estado', $nuevoEstado);
+        return $statement->execute();
     }
-    
-    /**
-     * Obtener estadísticas de tickets por estado
-     */
-    public function getEstadisticas($usuarioId = null, $rol = null) {
-        $query = "SELECT estado, COUNT(*) as total 
-                  FROM " . $this->table . " 
-                  WHERE 1=1";
+
+    public static function isValidTransition($estadoActual, $nuevoEstado)
+    {
+        $transiciones = [
+            'No Asignado' => ['Asignado'],
+            'Asignado' => ['En Proceso'],
+            'En Proceso' => ['En Espera de Terceros', 'Solucionado'],
+            'En Espera de Terceros' => ['En Proceso'],
+            'Solucionado' => ['Cerrado', 'Asignado']
+        ];
         
-        if ($rol === 'Usuario' && $usuarioId !== null) {
-            $query .= " AND usuario_creador_id = :usuario_id";
-        } elseif ($rol === 'Operador' && $usuarioId !== null) {
-            $query .= " AND operador_asignado_id = :usuario_id";
-        }
-        
-        $query .= " GROUP BY estado";
-        
-        $stmt = $this->conn->prepare($query);
-        
-        if ($usuarioId !== null && in_array($rol, ['Usuario', 'Operador'])) {
-            $stmt->bindParam(':usuario_id', $usuarioId);
-        }
-        
-        $stmt->execute();
-        return $stmt->fetchAll();
+        return isset($transiciones[$estadoActual]) && 
+               in_array($nuevoEstado, $transiciones[$estadoActual]);
     }
 }
