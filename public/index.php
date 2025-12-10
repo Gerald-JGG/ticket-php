@@ -55,13 +55,13 @@ $router->add('POST', '/login', 'AuthController@authenticate');
 $router->add('GET', '/logout', 'AuthController@logout');
 
 // User Routes (Solo Superadministrador)
-$router->add('GET', '/users', 'UserController@index');
-$router->add('GET', '/users/create', 'UserController@create');
-$router->add('POST', '/users/store', 'UserController@store');
-$router->add('GET', '/users/edit/{id}', 'UserController@edit');
-$router->add('POST', '/users/update/{id}', 'UserController@update');
-$router->add('GET', '/users/deactivate/{id}', 'UserController@deactivate');
-$router->add('GET', '/users/activate/{id}', 'UserController@activate');
+$router->add('GET', '/users', 'UsuarioController@index');
+$router->add('GET', '/users/create', 'UsuarioController@create');
+$router->add('POST', '/users/store', 'UsuarioController@store');
+$router->add('GET', '/users/edit/{id}', 'UsuarioController@edit');
+$router->add('POST', '/users/update/{id}', 'UsuarioController@update');
+$router->add('GET', '/users/deactivate/{id}', 'UsuarioController@deactivate');
+$router->add('GET', '/users/activate/{id}', 'UsuarioController@activate');
 
 // Ticket Routes
 $router->add('GET', '/tickets', 'TicketController@index');

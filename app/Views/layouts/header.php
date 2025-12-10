@@ -43,7 +43,7 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                     aria-expanded="false">
-                                    <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['user']['nombre_completo']) ?>
+                                    <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['user']['username']) ?>
                                     <span class="badge"><?= htmlspecialchars($_SESSION['user']['rol']) ?></span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
