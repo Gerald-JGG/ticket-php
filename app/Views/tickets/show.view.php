@@ -155,37 +155,41 @@
             </div>
 
             <!-- Agregar Comentario (Solo si no está cerrado) -->
-            <?php if ($ticket->estado !== 'Cerrado' && $userRole === 'Usuario'): ?>
-                <div class="card">
-                    <div class="card-header">
-                        <i class="bi bi-chat-left-text"></i> Agregar Comentario
+            <?php if ($ticket->estado !== 'Cerrado'): ?>
+                <?php if ($userRole === 'Usuario' || in_array($userRole, ['Operador', 'Superadministrador'])): ?>
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="bi bi-chat-left-text"></i> Agregar Comentario
+                        </div>
+                        <div class="card-body">
+                            <form action="/tickets/<?= $ticket->id ?>/add-entry" method="POST">
+                                <div class="mb-3">
+                                    <label for="texto" class="form-label">
+                                        <?= $userRole === 'Usuario' ? 'Escribe tu comentario o proporciona información adicional' : 'Agregar nota o actualización' ?>
+                                    </label>
+                                    <textarea class="form-control" 
+                                              id="texto" 
+                                              name="texto" 
+                                              rows="4" 
+                                              placeholder="<?= $userRole === 'Usuario' ? 'Agrega información adicional...' : 'Describe el progreso o acciones realizadas...' ?>"
+                                              required></textarea>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-send"></i> Enviar Comentario
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <form action="/tickets/<?= $ticket->id ?>/add-entry" method="POST">
-                            <div class="mb-3">
-                                <label for="texto" class="form-label">Escribe tu comentario o proporciona información adicional</label>
-                                <textarea class="form-control" 
-                                          id="texto" 
-                                          name="texto" 
-                                          rows="4" 
-                                          placeholder="Agrega información adicional que pueda ayudar a resolver tu ticket..."
-                                          required></textarea>
-                            </div>
-                            <div class="d-flex justify-content-end">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-send"></i> Enviar Comentario
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <?php endif; ?>
             <?php endif; ?>
         </div>
 
         <!-- Columna Lateral: Acciones -->
         <div class="col-md-4">
+            <!-- Acciones para Usuario: Aceptar/Rechazar Solución -->
             <?php if ($userRole === 'Usuario' && $ticket->estado === 'Solucionado'): ?>
-                <!-- Aceptar/Rechazar Solución -->
                 <div class="card mb-3 border-success">
                     <div class="card-header bg-success text-white">
                         <i class="bi bi-check-circle"></i> Solución Propuesta
@@ -208,7 +212,7 @@
 
                         <small class="text-muted d-block mt-2">
                             <i class="bi bi-info-circle"></i>
-                            Si aceptas, el ticket será cerrado. Si lo rechazas, volverá al operador para continuar trabajando en él.
+                            Si aceptas, el ticket será cerrado. Si lo rechazas, volverá al operador.
                         </small>
                     </div>
                 </div>
@@ -229,7 +233,7 @@
                                     <textarea class="form-control" 
                                               name="motivo" 
                                               rows="4" 
-                                              placeholder="Describe qué sigue sin funcionar o qué problema persiste..."
+                                              placeholder="Describe qué sigue sin funcionar..."
                                               required></textarea>
                                 </div>
                                 <div class="modal-footer">
@@ -240,6 +244,43 @@
                                 </div>
                             </form>
                         </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <!-- Acciones para Operador: Cambiar Estado -->
+            <?php if (in_array($userRole, ['Operador', 'Superadministrador']) && $ticket->estado !== 'Cerrado' && !empty($estadosDisponibles)): ?>
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <i class="bi bi-arrow-repeat"></i> Cambiar Estado
+                    </div>
+                    <div class="card-body">
+                        <form action="/tickets/<?= $ticket->id ?>/update-status" method="POST">
+                            <div class="mb-3">
+                                <label for="estado" class="form-label">Nuevo Estado</label>
+                                <select class="form-select" id="estado" name="estado" required>
+                                    <option value="">Seleccione un estado</option>
+                                    <?php foreach ($estadosDisponibles as $estadoDisp): ?>
+                                        <option value="<?= htmlspecialchars($estadoDisp->nombre) ?>">
+                                            <?= htmlspecialchars($estadoDisp->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="comentario" class="form-label">Comentario (opcional)</label>
+                                <textarea class="form-control" 
+                                          id="comentario" 
+                                          name="comentario" 
+                                          rows="3" 
+                                          placeholder="Describe las acciones realizadas o motivo del cambio..."></textarea>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-check-circle"></i> Actualizar Estado
+                            </button>
+                        </form>
                     </div>
                 </div>
             <?php endif; ?>
@@ -273,7 +314,4 @@
     </div>
 </div>
 
-<?php require __DIR__ . '/../layouts/footer.php'; 
-
-var_dump($ticket);
-exit;?>
+<?php require __DIR__ . '/../layouts/footer.php'; ?>
