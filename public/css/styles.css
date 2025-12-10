@@ -195,6 +195,7 @@ body {
   font-weight: 600;
   line-height: 1.4;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -292,6 +293,7 @@ body {
   text-align: center;
   margin-bottom: 1rem;
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -671,53 +673,52 @@ footer {
 .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(120px);
-  opacity: 0.7;
-  animation: float 20s infinite ease-in-out;
+  filter: blur(90px);      
+  opacity: 0.4;           
+  animation: float 25s infinite ease-in-out;
 }
 
 .blob-1 {
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, #ff6b35 0%, #ff8c5f 50%, transparent 70%);
-  top: -250px;
-  left: -250px;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #ff3300 0%, #ff5010 50%, transparent 70%);
+  top: -180px;
+  left: -180px;
   animation-delay: 0s;
 }
 
 .blob-2 {
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, #ff8c5f 0%, #ffa366 50%, transparent 70%);
-  bottom: -200px;
-  right: -200px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #ff3300 0%, #ff591d 50%, transparent 70%);
+  bottom: -150px;
+  right: -150px;
   animation-delay: 5s;
-  animation-duration: 25s;
+  animation-duration: 28s;
 }
 
 .blob-3 {
-  width: 450px;
-  height: 450px;
-  background: radial-gradient(circle, #ff4500 0%, #ff6b35 50%, transparent 70%);
-  top: 22%;
-  left: 37%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #ff4f1a 0%, #ff6c3f 50%, transparent 70%);
+  top: 25%;
+  left: 40%;
   animation-delay: 10s;
   animation-duration: 30s;
 }
 
 @keyframes float {
-  0%,
-  100% {
+  0%, 100% {
     transform: translate(0, 0) scale(1);
   }
   25% {
-    transform: translate(100px, -100px) scale(1.1);
+    transform: translate(80px, -80px) scale(1.05);
   }
   50% {
-    transform: translate(-50px, 100px) scale(0.9);
+    transform: translate(-40px, 60px) scale(0.95);
   }
   75% {
-    transform: translate(-100px, -50px) scale(1.05);
+    transform: translate(-80px, -30px) scale(1.02);
   }
 }
 
@@ -820,4 +821,11 @@ footer {
     height: 60px;
     font-size: 1.5rem;
   }
+}
+
+/* ===================================
+   Bootstrap Overrides
+   =================================== */
+.text-muted {
+  color: var(--light-gray) !important;
 }
