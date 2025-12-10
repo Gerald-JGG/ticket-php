@@ -30,6 +30,8 @@ body {
     background-color: var(--secondary-black);
     color: var(--white);
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
 }
 
 /* ===================================
@@ -432,6 +434,72 @@ footer {
 }
 
 /* ===================================
+   Login Page - Animated Blobs
+   =================================== */
+.blob-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 20s infinite ease-in-out;
+}
+
+.blob-1 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, #ff6b35 0%, #ff8c5f 50%, transparent 70%);
+    top: -150px;
+    left: -150px;
+    animation-delay: 0s;
+}
+
+.blob-2 {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, #ff8c5f 0%, #ffa366 50%, transparent 70%);
+    bottom: -100px;
+    right: -100px;
+    animation-delay: 5s;
+    animation-duration: 25s;
+}
+
+.blob-3 {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, #ff4500 0%, #ff6b35 50%, transparent 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 10s;
+    animation-duration: 30s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) scale(1);
+    }
+    25% {
+        transform: translate(100px, -100px) scale(1.1);
+    }
+    50% {
+        transform: translate(-50px, 100px) scale(0.9);
+    }
+    75% {
+        transform: translate(-100px, -50px) scale(1.05);
+    }
+}
+
+/* ===================================
    Login Page
    =================================== */
 .login-container {
@@ -439,17 +507,28 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--secondary-black) 0%, var(--dark-gray) 100%);
+    background: transparent;
+    position: relative;
+    z-index: 1;
 }
 
 .login-card {
     max-width: 450px;
     width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.login-card .card {
+    background-color: var(--dark-gray);
+    border: 1px solid var(--medium-gray);
 }
 
 .login-card .card-header {
+    background: linear-gradient(135deg, rgba(255, 108, 54, 0.36) 0%, rgba(255, 107, 53, 0.03) 100%);
+    border-bottom: 1px solid rgba(255, 107, 53, 0.38);
+    padding: 2.5rem 2rem;
     text-align: center;
-    padding: 2rem;
 }
 
 .login-card .card-header i {
