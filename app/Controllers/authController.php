@@ -57,8 +57,8 @@ class AuthController extends Controller
         $_SESSION['user'] = [
             'id' => $user->id,
             'username' => $user->username,
-            'rol' => $user->rol, // Ahora viene del JOIN con la tabla roles
-            'nombre_completo' => $user->nombre_completo
+            'rol' => $user->rol, // Viene del JOIN con la tabla roles
+            'email' => $user->email
         ];
 
         // Actualizar último acceso

@@ -55,10 +55,6 @@ class UsuarioController extends Controller
         // Validar datos
         $errors = [];
         
-        if (empty($_POST['nombre_completo'])) {
-            $errors[] = 'El nombre completo es obligatorio';
-        }
-        
         if (empty($_POST['username']) || strlen($_POST['username']) < 3) {
             $errors[] = 'El nombre de usuario es obligatorio y debe tener al menos 3 caracteres';
         }
@@ -88,13 +84,11 @@ class UsuarioController extends Controller
         }
 
         $data = [
-            'nombre_completo' => trim($_POST['nombre_completo']),
             'username' => trim($_POST['username']),
             'password' => $_POST['password'],
-            'rol' => $_POST['rol'],
+            'rol_id' => $_POST['rol'],
             'email' => !empty($_POST['email']) ? trim($_POST['email']) : null,
-            'telefono' => !empty($_POST['telefono']) ? trim($_POST['telefono']) : null,
-            'departamento' => !empty($_POST['departamento']) ? $_POST['departamento'] : null
+            'departamento_id' => !empty($_POST['departamento']) ? $_POST['departamento'] : null
         ];
 
         User::create($data);
@@ -138,10 +132,6 @@ class UsuarioController extends Controller
         // Validar datos
         $errors = [];
         
-        if (empty($_POST['nombre_completo'])) {
-            $errors[] = 'El nombre completo es obligatorio';
-        }
-        
         if (empty($_POST['username']) || strlen($_POST['username']) < 3) {
             $errors[] = 'El nombre de usuario es obligatorio y debe tener al menos 3 caracteres';
         }
@@ -174,12 +164,10 @@ class UsuarioController extends Controller
         }
 
         $data = [
-            'nombre_completo' => trim($_POST['nombre_completo']),
             'username' => trim($_POST['username']),
-            'rol' => $_POST['rol'],
+            'rol_id' => $_POST['rol'],
             'email' => !empty($_POST['email']) ? trim($_POST['email']) : null,
-            'telefono' => !empty($_POST['telefono']) ? trim($_POST['telefono']) : null,
-            'departamento' => !empty($_POST['departamento']) ? $_POST['departamento'] : null
+            'departamento_id' => !empty($_POST['departamento']) ? $_POST['departamento'] : null
         ];
 
         // Si se proporciona nueva contraseña
