@@ -14,7 +14,7 @@
 <body>
     <header>
         <nav class="navbar navbar-expand-lg navbar-custom">
-            <div class="container-fluid">
+            <div class="container">
                 <a class="navbar-brand" href="/">
                     <i class="bi bi-headset"></i>
                     <span>Help Desk - Los Patitos S.A.</span>

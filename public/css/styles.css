@@ -43,7 +43,7 @@ body {
     var(--secondary-black) 0%,
     var(--dark-gray) 100%
   );
-  border-bottom: 3px solid var(--primary-orange);
+  border-bottom: 1px solid var(--primary-orange);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
   padding: 1rem 0;
 }
@@ -454,7 +454,7 @@ textarea.form-control {
    =================================== */
 footer {
   background-color: var(--secondary-black);
-  border-top: 3px solid var(--primary-orange);
+  border-top: 1px solid var(--primary-orange);
   color: var(--light-gray);
   margin-top: 3rem;
 }
