@@ -14,7 +14,7 @@ class Entrada extends Model
     {
         $statement = self::connection()->prepare("
             SELECT e.*, 
-                   u.nombre_completo as autor_nombre,
+                   u.username as autor_nombre,
                    r.nombre as autor_rol,
                    ea.nombre as estado_anterior,
                    en.nombre as estado_nuevo
@@ -41,22 +41,23 @@ class Entrada extends Model
         
         // Obtener IDs de estados si se proporcionan nombres
         if (isset($data['estado_anterior']) && !empty($data['estado_anterior'])) {
-            $estadoAnteriorId = self::getEstadoIdByName($data['estado_anterior']);
+            $estado = Estado::findByName($data['estado_anterior']);
+            $estadoAnteriorId = $estado ? $estado->id : null;
         }
         
         if (isset($data['estado_nuevo']) && !empty($data['estado_nuevo'])) {
-            $estadoNuevoId = self::getEstadoIdByName($data['estado_nuevo']);
+            $estado = Estado::findByName($data['estado_nuevo']);
+            $estadoNuevoId = $estado ? $estado->id : null;
         }
         
         $statement = self::connection()->prepare("
-            INSERT INTO entradas (ticket_id, autor_id, texto, es_interno, estado_anterior_id, estado_nuevo_id) 
-            VALUES (:ticket_id, :autor_id, :texto, :es_interno, :estado_anterior_id, :estado_nuevo_id)
+            INSERT INTO entradas (ticket_id, autor_id, texto, estado_anterior_id, estado_nuevo_id) 
+            VALUES (:ticket_id, :autor_id, :texto, :estado_anterior_id, :estado_nuevo_id)
         ");
         
         $statement->bindValue(':ticket_id', $data['ticket_id']);
         $statement->bindValue(':autor_id', $data['autor_id']);
         $statement->bindValue(':texto', $data['texto']);
-        $statement->bindValue(':es_interno', $data['es_interno'] ?? false);
         $statement->bindValue(':estado_anterior_id', $estadoAnteriorId);
         $statement->bindValue(':estado_nuevo_id', $estadoNuevoId);
         
@@ -86,7 +87,7 @@ class Entrada extends Model
     {
         $statement = self::connection()->prepare("
             SELECT e.*, 
-                   u.nombre_completo as autor_nombre,
+                   u.username as autor_nombre,
                    r.nombre as autor_rol,
                    ea.nombre as estado_anterior,
                    en.nombre as estado_nuevo
@@ -111,7 +112,7 @@ class Entrada extends Model
     {
         $query = "
             SELECT e.*, 
-                   u.nombre_completo as autor_nombre,
+                   u.username as autor_nombre,
                    r.nombre as autor_rol,
                    ea.nombre as estado_anterior,
                    en.nombre as estado_nuevo
@@ -123,11 +124,6 @@ class Entrada extends Model
             WHERE e.ticket_id = :ticketId
         ";
         
-        // Si no es operador, solo mostrar entradas no internas
-        if (!$isOperator) {
-            $query .= " AND e.es_interno = FALSE";
-        }
-        
         $query .= " ORDER BY e.fecha_creacion ASC";
         
         $statement = self::connection()->prepare($query);
@@ -137,25 +133,13 @@ class Entrada extends Model
     }
 
     /**
-     * Obtener ID del estado por nombre
-     */
-    private static function getEstadoIdByName($estadoName)
-    {
-        $statement = self::connection()->prepare("SELECT id FROM estados WHERE nombre = :nombre");
-        $statement->bindValue(':nombre', $estadoName);
-        $statement->execute();
-        $result = $statement->fetch(PDO::FETCH_OBJ);
-        return $result ? $result->id : null;
-    }
-
-    /**
      * Obtener todas las entradas con cambios de estado
      */
     public static function getStatusChanges($ticketId)
     {
         $statement = self::connection()->prepare("
             SELECT e.*, 
-                   u.nombre_completo as autor_nombre,
+                   u.username as autor_nombre,
                    ea.nombre as estado_anterior,
                    en.nombre as estado_nuevo
             FROM entradas e
