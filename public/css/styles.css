@@ -777,8 +777,8 @@ footer {
 .login-card .card-header {
   background: linear-gradient(
     135deg,
-    rgba(255, 108, 54, 0.36) 0%,
-    rgba(255, 107, 53, 0.03) 100%
+    rgba(255, 30, 0, 0.36) 0%,
+    rgba(0, 0, 0, 0.03) 100%
   );
   border-bottom: 1px solid rgba(255, 107, 53, 0.38);
   padding: 2.5rem 2rem;
