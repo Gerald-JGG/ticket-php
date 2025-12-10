@@ -1,24 +1,31 @@
 <?php
-class Database {
-    
-    private $host = 'localhost';
-    private $db_name = 'ticketphp';
-    private $username = 'phpuser';
-    private $password = 'secret';
-    private $charset = 'utf8mb4';
-    private $conn = null;
-    
-    public function getConnection() {
-        try {
-            $dsn = "mysql:host={$this->host};dbname={$this->db_name};charset={$this->charset}";
-            $this->conn = new PDO($dsn, $this->username, $this->password);
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            echo "Error de conexión: " . $e->getMessage();
-            return null;
+
+/**
+ * Simple .env parser for educational purposes.
+ * In a real production environment, use a library like vlucas/phpdotenv.
+ */
+$envFile = __DIR__ . '/../.env';
+$env = [];
+
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (strpos(trim($line), '#') === 0) {
+            continue;
         }
-        return $this->conn;
+
+        list($name, $value) = explode('=', $line, 2);
+        $name = trim($name);
+        $value = trim($value);
+
+        $env[$name] = $value;
     }
 }
-?>
+
+return [
+    'host' => $env['DB_HOST'] ?? '127.0.0.1',
+    'dbname' => $env['DB_NAME'] ?? 'mydatabase',
+    'username' => $env['DB_USER'] ?? 'root',
+    'password' => $env['DB_PASS'] ?? 'toor',
+    'charset' => $env['DB_CHARSET'] ?? 'utf8mb4'
+];
