@@ -39,7 +39,7 @@ CREATE TABLE usuarios (
     fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     ultimo_acceso TIMESTAMP NULL,
     FOREIGN KEY (rol_id) REFERENCES roles(id),
-    FOREIGN KEY (departamento_id) REFERENCES departamentos(id) ON DELETE SET NULL,
+    FOREIGN KEY (departamento_id) REFERENCES departamentos(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Tabla 5: Categorías de Tickets

@@ -2,590 +2,621 @@
    Variables de Color - Esquema Negro y Naranja
    =================================== */
 :root {
-    --primary-orange: #ff6b35;
-    --primary-orange-dark: #e55a2b;
-    --primary-orange-light: #ff8c5f;
-    --secondary-black: #1a1a1a;
-    --dark-gray: #2d2d2d;
-    --medium-gray: #404040;
-    --light-gray: #e0e0e0;
-    --white: #ffffff;
-    --success: #10b981;
-    --danger: #ef4444;
-    --warning: #f59e0b;
-    --info: #3b82f6;
+  --primary-orange: #ff6b35;
+  --primary-orange-dark: #e55a2b;
+  --primary-orange-light: #ff8c5f;
+  --secondary-black: #1a1a1a;
+  --dark-gray: #2d2d2d;
+  --medium-gray: #404040;
+  --light-gray: #e0e0e0;
+  --white: #ffffff;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --info: #3b82f6;
 }
 
 /* ===================================
    Estilos Generales
    =================================== */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: var(--secondary-black);
-    color: var(--white);
-    min-height: 100vh;
-    position: relative;
-    overflow-x: hidden;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--secondary-black);
+  color: var(--white);
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
 }
 
 /* ===================================
    Navbar
    =================================== */
 .navbar-custom {
-    background: linear-gradient(135deg, var(--secondary-black) 0%, var(--dark-gray) 100%);
-    border-bottom: 3px solid var(--primary-orange);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    padding: 1rem 0;
+  background: linear-gradient(
+    135deg,
+    var(--secondary-black) 0%,
+    var(--dark-gray) 100%
+  );
+  border-bottom: 3px solid var(--primary-orange);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  padding: 1rem 0;
 }
 
 .navbar-custom .navbar-brand {
-    color: var(--white) !important;
-    font-weight: 700;
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+  color: var(--white) !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .navbar-custom .navbar-brand i {
-    color: var(--primary-orange);
-    font-size: 1.8rem;
+  color: var(--primary-orange);
+  font-size: 1.8rem;
 }
 
 .navbar-custom .nav-link {
-    color: var(--light-gray) !important;
-    font-weight: 500;
-    padding: 0.5rem 1rem !important;
-    transition: all 0.3s ease;
-    border-radius: 5px;
+  color: var(--light-gray) !important;
+  font-weight: 500;
+  padding: 0.5rem 1rem !important;
+  transition: all 0.3s ease;
+  border-radius: 5px;
 }
 
 .navbar-custom .nav-link:hover {
-    color: var(--primary-orange) !important;
-    background-color: rgba(255, 107, 53, 0.1);
+  color: var(--primary-orange) !important;
+  background-color: rgba(255, 107, 53, 0.1);
 }
 
 .navbar-custom .dropdown-menu {
-    background-color: var(--dark-gray);
-    border: 1px solid var(--primary-orange);
+  background-color: var(--dark-gray);
+  border: 1px solid var(--primary-orange);
 }
 
 .navbar-custom .dropdown-item {
-    color: var(--white);
+  color: var(--white);
 }
 
 .navbar-custom .dropdown-item:hover {
-    background-color: var(--primary-orange);
-    color: var(--white);
+  background-color: var(--primary-orange);
+  color: var(--white);
 }
 
 .navbar-custom .badge {
-    background-color: var(--primary-orange) !important;
-    color: var(--secondary-black) !important;
-    font-weight: 600;
-    padding: 0.35rem 0.65rem;
+  background-color: var(--primary-orange) !important;
+  color: var(--secondary-black) !important;
+  font-weight: 600;
+  padding: 0.35rem 0.65rem;
 }
 
 /* ===================================
    Container Principal
    =================================== */
 .container-fluid {
-    padding: 2rem;
+  padding: 2rem;
 }
 
 /* ===================================
    Cards
    =================================== */
 .card {
-    background-color: var(--dark-gray);
-    border: 1px solid var(--medium-gray);
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    margin-bottom: 1.5rem;
+  background-color: var(--dark-gray);
+  border: 1px solid var(--medium-gray);
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin-bottom: 1.5rem;
 }
 
 .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(255, 107, 53, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(255, 107, 53, 0.2);
 }
 
 .card-header {
-    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dark) 100%);
-    color: var(--white);
-    font-weight: 700;
-    border-bottom: none;
-    border-radius: 10px 10px 0 0 !important;
-    padding: 1rem 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--primary-orange) 0%,
+    var(--primary-orange-dark) 100%
+  );
+  color: var(--white);
+  font-weight: 700;
+  border-bottom: none;
+  border-radius: 10px 10px 0 0 !important;
+  padding: 1rem 1.5rem;
 }
 
 .card-body {
-    color: var(--white);
-    padding: 1.5rem;
+  color: var(--white);
+  padding: 1.5rem;
 }
 
 .card-footer {
-    background-color: var(--medium-gray);
-    border-top: 1px solid var(--primary-orange);
-    border-radius: 0 0 10px 10px;
+  background-color: var(--medium-gray);
+  border-top: 1px solid var(--primary-orange);
+  border-radius: 0 0 10px 10px;
 }
 
 /* ===================================
    Botones
    =================================== */
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dark) 100%);
-    border: none;
-    color: var(--white);
-    font-weight: 600;
-    padding: 0.6rem 1.5rem;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
+  background: linear-gradient(
+    135deg,
+    var(--primary-orange) 0%,
+    var(--primary-orange-dark) 100%
+  );
+  border: none;
+  color: var(--white);
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--primary-orange-dark) 0%, var(--primary-orange) 100%);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(255, 107, 53, 0.5);
+  background: linear-gradient(
+    135deg,
+    var(--primary-orange-dark) 0%,
+    var(--primary-orange) 100%
+  );
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(255, 107, 53, 0.5);
 }
 
 .btn-secondary {
-    background-color: var(--medium-gray);
-    border: 1px solid var(--light-gray);
-    color: var(--white);
-    font-weight: 600;
+  background-color: var(--medium-gray);
+  border: 1px solid var(--light-gray);
+  color: var(--white);
+  font-weight: 600;
 }
 
 .btn-secondary:hover {
-    background-color: var(--dark-gray);
-    border-color: var(--primary-orange);
-    color: var(--primary-orange);
+  background-color: var(--dark-gray);
+  border-color: var(--primary-orange);
+  color: var(--primary-orange);
 }
 
 .btn-success {
-    background-color: var(--success);
-    border: none;
+  background-color: var(--success);
+  border: none;
 }
 
 .btn-danger {
-    background-color: var(--danger);
-    border: none;
+  background-color: var(--danger);
+  border: none;
 }
 
 .btn-warning {
-    background-color: var(--warning);
-    border: none;
-    color: var(--secondary-black);
+  background-color: var(--warning);
+  border: none;
+  color: var(--secondary-black);
 }
 
 .btn-outline-orange {
-    border: 2px solid var(--primary-orange);
-    color: var(--primary-orange);
-    background-color: transparent;
-    font-weight: 600;
+  border: 2px solid var(--primary-orange);
+  color: var(--primary-orange);
+  background-color: transparent;
+  font-weight: 600;
 }
 
 .btn-outline-orange:hover {
-    background-color: var(--primary-orange);
-    color: var(--white);
+  background-color: var(--primary-orange);
+  color: var(--white);
 }
 
 /* ===================================
    Formularios
    =================================== */
 .form-label {
-    color: var(--white);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
+  color: var(--white);
+  font-weight: 600;
+  margin-bottom: 0.5rem;
 }
 
-.form-control, .form-select {
-    background-color: var(--medium-gray);
-    border: 1px solid var(--light-gray);
-    color: var(--white);
-    padding: 0.75rem;
-    border-radius: 8px;
+.form-control,
+.form-select {
+  background-color: var(--medium-gray);
+  border: 1px solid var(--light-gray);
+  color: var(--white);
+  padding: 0.75rem;
+  border-radius: 8px;
 }
 
-.form-control:focus, .form-select:focus {
-    background-color: var(--dark-gray);
-    border-color: var(--primary-orange);
-    color: var(--white);
-    box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--dark-gray);
+  border-color: var(--primary-orange);
+  color: var(--white);
+  box-shadow: 0 0 0 0.2rem rgba(255, 107, 53, 0.25);
 }
 
 .form-control::placeholder {
-    color: var(--light-gray);
-    opacity: 0.7;
+  color: var(--light-gray);
+  opacity: 0.7;
 }
 
 textarea.form-control {
-    min-height: 120px;
+  min-height: 120px;
 }
 
 /* ===================================
    Tablas
    =================================== */
 .table {
-    color: var(--white);
-    background-color: var(--dark-gray);
-    border-radius: 10px;
-    overflow: hidden;
+  color: var(--white);
+  background-color: var(--dark-gray);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .table thead {
-    background: linear-gradient(135deg, var(--primary-orange) 0%, var(--primary-orange-dark) 100%);
-    color: var(--white);
+  background: linear-gradient(
+    135deg,
+    var(--primary-orange) 0%,
+    var(--primary-orange-dark) 100%
+  );
+  color: var(--white);
 }
 
 .table thead th {
-    border: none;
-    font-weight: 700;
-    padding: 1rem;
+  border: none;
+  font-weight: 700;
+  padding: 1rem;
 }
 
 .table tbody tr {
-    border-bottom: 1px solid var(--medium-gray);
-    transition: background-color 0.2s ease;
+  border-bottom: 1px solid var(--medium-gray);
+  transition: background-color 0.2s ease;
 }
 
 .table tbody tr:hover {
-    background-color: var(--medium-gray);
+  background-color: var(--medium-gray);
 }
 
 .table tbody td {
-    padding: 1rem;
-    vertical-align: middle;
+  padding: 1rem;
+  vertical-align: middle;
 }
 
 /* ===================================
    Badges
    =================================== */
 .badge {
-    padding: 0.5rem 1rem;
-    font-weight: 600;
-    border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  border-radius: 20px;
 }
 
 .badge-orange {
-    background-color: var(--primary-orange);
-    color: var(--white);
+  background-color: var(--primary-orange);
+  color: var(--white);
 }
 
 .badge-no-asignado {
-    background-color: var(--medium-gray);
-    color: var(--white);
+  background-color: var(--medium-gray);
+  color: var(--white);
 }
 
 .badge-asignado {
-    background-color: var(--info);
-    color: var(--white);
+  background-color: var(--info);
+  color: var(--white);
 }
 
 .badge-en-proceso {
-    background-color: var(--warning);
-    color: var(--secondary-black);
+  background-color: var(--warning);
+  color: var(--secondary-black);
 }
 
 .badge-en-espera {
-    background-color: #9333ea;
-    color: var(--white);
+  background-color: #9333ea;
+  color: var(--white);
 }
 
 .badge-solucionado {
-    background-color: var(--success);
-    color: var(--white);
+  background-color: var(--success);
+  color: var(--white);
 }
 
 .badge-cerrado {
-    background-color: var(--dark-gray);
-    color: var(--light-gray);
+  background-color: var(--dark-gray);
+  color: var(--light-gray);
 }
 
 /* ===================================
    Alerts
    =================================== */
 .alert {
-    border-radius: 8px;
-    border: none;
-    padding: 1rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  padding: 1rem 1.5rem;
 }
 
 .alert-danger {
-    background-color: rgba(239, 68, 68, 0.2);
-    color: #fca5a5;
-    border-left: 4px solid var(--danger);
+  background-color: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
+  border-left: 4px solid var(--danger);
 }
 
 .alert-success {
-    background-color: rgba(16, 185, 129, 0.2);
-    color: #6ee7b7;
-    border-left: 4px solid var(--success);
+  background-color: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
+  border-left: 4px solid var(--success);
 }
 
 .alert-warning {
-    background-color: rgba(245, 158, 11, 0.2);
-    color: #fcd34d;
-    border-left: 4px solid var(--warning);
+  background-color: rgba(245, 158, 11, 0.2);
+  color: #fcd34d;
+  border-left: 4px solid var(--warning);
 }
 
 .alert-info {
-    background-color: rgba(59, 130, 246, 0.2);
-    color: #93c5fd;
-    border-left: 4px solid var(--info);
+  background-color: rgba(59, 130, 246, 0.2);
+  color: #93c5fd;
+  border-left: 4px solid var(--info);
 }
 
 /* ===================================
    Ticket Entry (Historial)
    =================================== */
 .entry-card {
-    background-color: var(--medium-gray);
-    border-left: 4px solid var(--primary-orange);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+  background-color: var(--medium-gray);
+  border-left: 4px solid var(--primary-orange);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 .entry-card.internal {
-    border-left-color: var(--warning);
-    background-color: rgba(245, 158, 11, 0.1);
+  border-left-color: var(--warning);
+  background-color: rgba(245, 158, 11, 0.1);
 }
 
 .entry-card.status-change {
-    border-left-color: var(--info);
-    background-color: rgba(59, 130, 246, 0.1);
+  border-left-color: var(--info);
+  background-color: rgba(59, 130, 246, 0.1);
 }
 
 .entry-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--dark-gray);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--dark-gray);
 }
 
 .entry-author {
-    font-weight: 700;
-    color: var(--primary-orange);
+  font-weight: 700;
+  color: var(--primary-orange);
 }
 
 .entry-date {
-    color: var(--light-gray);
-    font-size: 0.9rem;
+  color: var(--light-gray);
+  font-size: 0.9rem;
 }
 
 .entry-content {
-    color: var(--white);
-    line-height: 1.6;
+  color: var(--white);
+  line-height: 1.6;
 }
 
 /* ===================================
    Stats Cards (Dashboard)
    =================================== */
 .stat-card {
-    background: linear-gradient(135deg, var(--dark-gray) 0%, var(--medium-gray) 100%);
-    border: 1px solid var(--primary-orange);
-    border-radius: 10px;
-    padding: 1.5rem;
-    text-align: center;
-    transition: all 0.3s ease;
+  background: linear-gradient(
+    135deg,
+    var(--dark-gray) 0%,
+    var(--medium-gray) 100%
+  );
+  border: 1px solid var(--primary-orange);
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
 }
 
 .stat-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(255, 107, 53, 0.3);
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(255, 107, 53, 0.3);
 }
 
 .stat-card i {
-    font-size: 3rem;
-    color: var(--primary-orange);
-    margin-bottom: 1rem;
+  font-size: 3rem;
+  color: var(--primary-orange);
+  margin-bottom: 1rem;
 }
 
 .stat-card h3 {
-    color: var(--white);
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
+  color: var(--white);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }
 
 .stat-card p {
-    color: var(--light-gray);
-    font-size: 1rem;
-    margin: 0;
+  color: var(--light-gray);
+  font-size: 1rem;
+  margin: 0;
 }
 
 /* ===================================
    Footer
    =================================== */
 footer {
-    background-color: var(--secondary-black);
-    border-top: 3px solid var(--primary-orange);
-    color: var(--light-gray);
-    margin-top: 3rem;
+  background-color: var(--secondary-black);
+  border-top: 3px solid var(--primary-orange);
+  color: var(--light-gray);
+  margin-top: 3rem;
 }
 
 /* ===================================
    Login Page - Animated Blobs
    =================================== */
 .blob-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
 }
 
 .blob {
-    position: absolute;
-    border-radius: 50%;
-    filter: blur(80px);
-    opacity: 0.6;
-    animation: float 20s infinite ease-in-out;
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.7;
+  animation: float 20s infinite ease-in-out;
 }
 
 .blob-1 {
-    width: 500px;
-    height: 500px;
-    background: radial-gradient(circle, #ff6b35 0%, #ff8c5f 50%, transparent 70%);
-    top: -150px;
-    left: -150px;
-    animation-delay: 0s;
+  width: 800px;
+  height: 800px;
+  background: radial-gradient(circle, #ff6b35 0%, #ff8c5f 50%, transparent 70%);
+  top: -250px;
+  left: -250px;
+  animation-delay: 0s;
 }
 
 .blob-2 {
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, #ff8c5f 0%, #ffa366 50%, transparent 70%);
-    bottom: -100px;
-    right: -100px;
-    animation-delay: 5s;
-    animation-duration: 25s;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, #ff8c5f 0%, #ffa366 50%, transparent 70%);
+  bottom: -200px;
+  right: -200px;
+  animation-delay: 5s;
+  animation-duration: 25s;
 }
 
 .blob-3 {
-    width: 350px;
-    height: 350px;
-    background: radial-gradient(circle, #ff4500 0%, #ff6b35 50%, transparent 70%);
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    animation-delay: 10s;
-    animation-duration: 30s;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, #ff4500 0%, #ff6b35 50%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation-delay: 10s;
+  animation-duration: 30s;
 }
 
 @keyframes float {
-    0%, 100% {
-        transform: translate(0, 0) scale(1);
-    }
-    25% {
-        transform: translate(100px, -100px) scale(1.1);
-    }
-    50% {
-        transform: translate(-50px, 100px) scale(0.9);
-    }
-    75% {
-        transform: translate(-100px, -50px) scale(1.05);
-    }
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(100px, -100px) scale(1.1);
+  }
+  50% {
+    transform: translate(-50px, 100px) scale(0.9);
+  }
+  75% {
+    transform: translate(-100px, -50px) scale(1.05);
+  }
 }
 
 /* ===================================
    Login Page
    =================================== */
 .login-container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: transparent;
-    position: relative;
-    z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
 .login-card {
-    max-width: 450px;
-    width: 100%;
-    position: relative;
-    z-index: 10;
+  max-width: 450px;
+  width: 100%;
+  position: relative;
+  z-index: 10;
 }
 
 .login-card .card {
-    background-color: var(--dark-gray);
-    border: 1px solid var(--medium-gray);
+  background-color: var(--dark-gray);
+  border: 1px solid var(--medium-gray);
 }
 
 .login-card .card-header {
-    background: linear-gradient(135deg, rgba(255, 108, 54, 0.36) 0%, rgba(255, 107, 53, 0.03) 100%);
-    border-bottom: 1px solid rgba(255, 107, 53, 0.38);
-    padding: 2.5rem 2rem;
-    text-align: center;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 108, 54, 0.36) 0%,
+    rgba(255, 107, 53, 0.03) 100%
+  );
+  border-bottom: 1px solid rgba(255, 107, 53, 0.38);
+  padding: 2.5rem 2rem;
+  text-align: center;
 }
 
 .login-card .card-header i {
-    font-size: 4rem;
-    color: var(--white);
-    margin-bottom: 1rem;
+  font-size: 4rem;
+  color: var(--white);
+  margin-bottom: 1rem;
 }
 
 /* ===================================
    Filtros
    =================================== */
 .filters-section {
-    background-color: var(--dark-gray);
-    padding: 1.5rem;
-    border-radius: 10px;
-    margin-bottom: 2rem;
-    border: 1px solid var(--primary-orange);
+  background-color: var(--dark-gray);
+  padding: 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  border: 1px solid var(--primary-orange);
 }
 
 /* ===================================
    Empty State
    =================================== */
 .empty-state {
-    text-align: center;
-    padding: 3rem;
-    color: var(--light-gray);
+  text-align: center;
+  padding: 3rem;
+  color: var(--light-gray);
 }
 
 .empty-state i {
-    font-size: 5rem;
-    color: var(--primary-orange);
-    margin-bottom: 1rem;
-    opacity: 0.5;
+  font-size: 5rem;
+  color: var(--primary-orange);
+  margin-bottom: 1rem;
+  opacity: 0.5;
 }
 
 .empty-state h3 {
-    color: var(--white);
-    margin-bottom: 1rem;
+  color: var(--white);
+  margin-bottom: 1rem;
 }
 
 /* ===================================
    Responsive
    =================================== */
 @media (max-width: 768px) {
-    .container-fluid {
-        padding: 1rem;
-    }
-    
-    .card-body {
-        padding: 1rem;
-    }
-    
-    .stat-card h3 {
-        font-size: 2rem;
-    }
-    
-    .table {
-        font-size: 0.9rem;
-    }
+  .container-fluid {
+    padding: 1rem;
+  }
+
+  .card-body {
+    padding: 1rem;
+  }
+
+  .stat-card h3 {
+    font-size: 2rem;
+  }
+
+  .table {
+    font-size: 0.9rem;
+  }
 }

@@ -26,7 +26,7 @@ class TicketController extends Controller
     public function index()
     {
         $user = User::find($_SESSION['user']['id']);
-        
+
         if ($user->rol === 'Usuario') {
             return $this->userDashboard();
         } elseif ($user->rol === 'Operador') {
@@ -44,7 +44,7 @@ class TicketController extends Controller
         $estado = $_GET['estado'] ?? 'todos';
         $tickets = Ticket::getByUser($_SESSION['user']['id'], $estado);
         $estados = Estado::allActive();
-        
+
         return $this->view('tickets/user_dashboard', [
             'tickets' => $tickets,
             'estado' => $estado,
@@ -61,7 +61,7 @@ class TicketController extends Controller
         $estado = $_GET['estado'] ?? 'todos';
         $misTickets = Ticket::getByOperator($_SESSION['user']['id'], $estado);
         $estados = Estado::allActive();
-        
+
         return $this->view('tickets/operator_dashboard', [
             'ticketsNoAsignados' => $ticketsNoAsignados,
             'misTickets' => $misTickets,
@@ -79,11 +79,11 @@ class TicketController extends Controller
         $tipo = $_GET['tipo'] ?? 'todos';
         $operador = $_GET['operador'] ?? 'todos';
         $busqueda = $_GET['busqueda'] ?? '';
-        
+
         $tickets = Ticket::getAllFiltered($estado, $tipo, $operador, $busqueda);
         $operadores = User::getOperators();
         $estados = Estado::allActive();
-        
+
         return $this->view('tickets/admin_dashboard', [
             'tickets' => $tickets,
             'operadores' => $operadores,
@@ -101,7 +101,7 @@ class TicketController extends Controller
     public function create()
     {
         $user = User::find($_SESSION['user']['id']);
-        
+
         if ($user->rol !== 'Usuario') {
             header('Location: /tickets');
             exit;
@@ -109,7 +109,7 @@ class TicketController extends Controller
 
         $categorias = Categoria::allActive();
         $prioridades = Prioridad::allActive();
-        
+
         return $this->view('tickets/create', [
             'categorias' => $categorias,
             'prioridades' => $prioridades
@@ -122,7 +122,7 @@ class TicketController extends Controller
     public function store()
     {
         $user = User::find($_SESSION['user']['id']);
-        
+
         if ($user->rol !== 'Usuario') {
             header('Location: /tickets');
             exit;
@@ -130,15 +130,15 @@ class TicketController extends Controller
 
         // Validar datos
         $errors = [];
-        
+
         if (empty($_POST['titulo']) || strlen($_POST['titulo']) > 200) {
             $errors[] = 'El título es obligatorio y debe tener máximo 200 caracteres';
         }
-        
+
         if (empty($_POST['tipo']) || !in_array($_POST['tipo'], ['Petición', 'Incidente'])) {
             $errors[] = 'El tipo de solicitud es inválido';
         }
-        
+
         if (empty($_POST['descripcion'])) {
             $errors[] = 'La descripción es obligatoria';
         }
@@ -165,13 +165,12 @@ class TicketController extends Controller
         $descripcion = trim($_POST['descripcion']);
 
         $ticketId = Ticket::create($data);
-        
+
         // Crear primera entrada con la descripción
         Entrada::create([
             'ticket_id' => $ticketId,
             'autor_id' => $_SESSION['user']['id'],
-            'texto' => $descripcion,
-            'es_interno' => false
+            'texto' => $descripcion
         ]);
 
         header('Location: /tickets/' . $ticketId);
@@ -184,7 +183,7 @@ class TicketController extends Controller
     {
         $user = User::find($_SESSION['user']['id']);
         $ticket = Ticket::find($id);
-        
+
         if (!$ticket) {
             header('Location: /tickets');
             exit;
@@ -204,10 +203,10 @@ class TicketController extends Controller
         // Obtener entradas según el rol
         $isOperator = in_array($user->rol, ['Operador', 'Superadministrador']);
         $entradas = Entrada::getVisibleByTicket($id, $isOperator);
-        
+
         // Obtener estados disponibles para transición
         $estadosDisponibles = Estado::getAvailableTransitions($ticket->estado);
-        
+
         return $this->view('tickets/show', [
             'ticket' => $ticket,
             'entradas' => $entradas,
@@ -222,27 +221,26 @@ class TicketController extends Controller
     public function assign($id)
     {
         $user = User::find($_SESSION['user']['id']);
-        
+
         if ($user->rol !== 'Operador') {
             header('Location: /tickets');
             exit;
         }
 
         $ticket = Ticket::find($id);
-        
+
         if ($ticket->estado !== 'No Asignado') {
             header('Location: /tickets');
             exit;
         }
 
         Ticket::assignToOperator($id, $_SESSION['user']['id']);
-        
+
         // Crear entrada de asignación
         Entrada::create([
             'ticket_id' => $id,
             'autor_id' => $_SESSION['user']['id'],
-            'texto' => 'Ticket asignado al operador ' . $_SESSION['user']['nombre_completo'],
-            'es_interno' => true,
+            'texto' => 'Ticket asignado al operador ' . $_SESSION['user']['username'],
             'estado_anterior' => 'No Asignado',
             'estado_nuevo' => 'Asignado'
         ]);
@@ -257,7 +255,7 @@ class TicketController extends Controller
     {
         $user = User::find($_SESSION['user']['id']);
         $ticket = Ticket::find($id);
-        
+
         if ($user->rol !== 'Operador' || $ticket->operador_asignado_id != $user->id) {
             header('Location: /tickets');
             exit;
@@ -273,13 +271,12 @@ class TicketController extends Controller
         }
 
         Ticket::updateStatus($id, $nuevoEstado);
-        
+
         // Crear entrada con cambio de estado
         Entrada::create([
             'ticket_id' => $id,
             'autor_id' => $_SESSION['user']['id'],
             'texto' => !empty($comentario) ? $comentario : 'Cambio de estado a: ' . $nuevoEstado,
-            'es_interno' => false,
             'estado_anterior' => $ticket->estado,
             'estado_nuevo' => $nuevoEstado
         ]);
@@ -294,7 +291,7 @@ class TicketController extends Controller
     {
         $user = User::find($_SESSION['user']['id']);
         $ticket = Ticket::find($id);
-        
+
         // Verificar permisos
         if ($user->rol === 'Usuario' && $ticket->usuario_creador_id != $user->id) {
             header('Location: /tickets');
@@ -307,19 +304,16 @@ class TicketController extends Controller
         }
 
         $texto = trim($_POST['texto']);
-        
+
         if (empty($texto)) {
             header('Location: /tickets/' . $id . '?error=texto_vacio');
             exit;
         }
-        
-        $esInterno = isset($_POST['es_interno']) && $user->rol !== 'Usuario' ? 1 : 0;
 
         Entrada::create([
             'ticket_id' => $id,
             'autor_id' => $_SESSION['user']['id'],
-            'texto' => $texto,
-            'es_interno' => $esInterno
+            'texto' => $texto
         ]);
 
         header('Location: /tickets/' . $id);
@@ -332,19 +326,18 @@ class TicketController extends Controller
     {
         $user = User::find($_SESSION['user']['id']);
         $ticket = Ticket::find($id);
-        
+
         if ($user->rol !== 'Usuario' || $ticket->usuario_creador_id != $user->id || $ticket->estado !== 'Solucionado') {
             header('Location: /tickets');
             exit;
         }
 
         Ticket::updateStatus($id, 'Cerrado');
-        
+
         Entrada::create([
             'ticket_id' => $id,
             'autor_id' => $_SESSION['user']['id'],
             'texto' => 'El usuario ha aceptado la solución propuesta',
-            'es_interno' => false,
             'estado_anterior' => 'Solucionado',
             'estado_nuevo' => 'Cerrado'
         ]);
@@ -359,7 +352,7 @@ class TicketController extends Controller
     {
         $user = User::find($_SESSION['user']['id']);
         $ticket = Ticket::find($id);
-        
+
         if ($user->rol !== 'Usuario' || $ticket->usuario_creador_id != $user->id || $ticket->estado !== 'Solucionado') {
             header('Location: /tickets');
             exit;
@@ -368,12 +361,11 @@ class TicketController extends Controller
         $motivo = trim($_POST['motivo'] ?? 'El usuario ha rechazado la solución propuesta');
 
         Ticket::updateStatus($id, 'Asignado');
-        
+
         Entrada::create([
             'ticket_id' => $id,
             'autor_id' => $_SESSION['user']['id'],
             'texto' => $motivo,
-            'es_interno' => false,
             'estado_anterior' => 'Solucionado',
             'estado_nuevo' => 'Asignado'
         ]);
