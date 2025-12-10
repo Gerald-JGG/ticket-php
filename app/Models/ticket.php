@@ -14,16 +14,16 @@ class Ticket extends Model
     {
         $statement = self::connection()->prepare("
             SELECT t.*, 
-                   u.nombre_completo as usuario_creador,
-                   o.nombre_completo as operador_asignado,
+                   uc.username as usuario_creador,
+                   oa.username as operador_asignado,
                    c.nombre as categoria_nombre,
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
                    e.nombre as estado
             FROM tickets t
-            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
-            LEFT JOIN usuarios o ON t.operador_asignado_id = o.id
+            LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
+            LEFT JOIN usuarios oa ON t.operador_asignado_id = oa.id
             LEFT JOIN categorias c ON t.categoria_id = c.id
             LEFT JOIN prioridades p ON t.prioridad_id = p.id
             LEFT JOIN estados e ON t.estado_id = e.id
@@ -40,18 +40,18 @@ class Ticket extends Model
     {
         $statement = self::connection()->prepare("
             SELECT t.*, 
-                   u.nombre_completo as usuario_creador,
-                   u.email as usuario_email,
-                   o.nombre_completo as operador_asignado,
-                   o.email as operador_email,
+                   uc.username as usuario_creador,
+                   uc.email as usuario_email,
+                   oa.username as operador_asignado,
+                   oa.email as operador_email,
                    c.nombre as categoria_nombre,
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
                    e.nombre as estado
             FROM tickets t
-            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
-            LEFT JOIN usuarios o ON t.operador_asignado_id = o.id
+            LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
+            LEFT JOIN usuarios oa ON t.operador_asignado_id = oa.id
             LEFT JOIN categorias c ON t.categoria_id = c.id
             LEFT JOIN prioridades p ON t.prioridad_id = p.id
             LEFT JOIN estados e ON t.estado_id = e.id
@@ -67,8 +67,12 @@ class Ticket extends Model
      */
     public static function create($data)
     {
-        // Obtener el ID con estado "No Asignado"
-        $estadoId = self::getEstadoIdByName('No Asignado');
+        // Obtener el ID del estado "No Asignado"
+        $estadoNoAsignado = Estado::findByName('No Asignado');
+        
+        if (!$estadoNoAsignado) {
+            throw new \Exception('Estado "No Asignado" no encontrado en la base de datos');
+        }
         
         $statement = self::connection()->prepare("
             INSERT INTO tickets (titulo, tipo, usuario_creador_id, categoria_id, prioridad_id, estado_id) 
@@ -80,7 +84,7 @@ class Ticket extends Model
         $statement->bindValue(':usuario_creador_id', $data['usuario_creador_id']);
         $statement->bindValue(':categoria_id', $data['categoria_id'] ?? null);
         $statement->bindValue(':prioridad_id', $data['prioridad_id'] ?? null);
-        $statement->bindValue(':estado_id', $estadoId);
+        $statement->bindValue(':estado_id', $estadoNoAsignado->id);
         
         $statement->execute();
         return self::connection()->lastInsertId();
@@ -129,18 +133,19 @@ class Ticket extends Model
     {
         $statement = self::connection()->prepare("
             SELECT t.*, 
-                   u.nombre_completo as usuario_creador,
+                   uc.username as usuario_creador,
                    c.nombre as categoria_nombre,
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
                    e.nombre as estado
             FROM tickets t
-            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
+            LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
             LEFT JOIN categorias c ON t.categoria_id = c.id
             LEFT JOIN prioridades p ON t.prioridad_id = p.id
             LEFT JOIN estados e ON t.estado_id = e.id
-            WHERE e.nombre = 'No Asignado'
+            WHERE t.operador_asignado_id IS NULL
+            AND e.nombre = 'No Asignado'
             ORDER BY t.fecha_creacion ASC
         ");
         $statement->execute();
@@ -154,14 +159,14 @@ class Ticket extends Model
     {
         $query = "
             SELECT t.*, 
-                   u.nombre_completo as usuario_creador,
+                   uc.username as usuario_creador,
                    c.nombre as categoria_nombre,
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
                    e.nombre as estado
             FROM tickets t
-            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
+            LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
             LEFT JOIN categorias c ON t.categoria_id = c.id
             LEFT JOIN prioridades p ON t.prioridad_id = p.id
             LEFT JOIN estados e ON t.estado_id = e.id
@@ -192,16 +197,16 @@ class Ticket extends Model
     {
         $query = "
             SELECT t.*, 
-                   u.nombre_completo as usuario_creador,
-                   o.nombre_completo as operador_asignado,
+                   uc.username as usuario_creador,
+                   oa.username as operador_asignado,
                    c.nombre as categoria_nombre,
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
                    e.nombre as estado
             FROM tickets t
-            LEFT JOIN usuarios u ON t.usuario_creador_id = u.id
-            LEFT JOIN usuarios o ON t.operador_asignado_id = o.id
+            LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
+            LEFT JOIN usuarios oa ON t.operador_asignado_id = oa.id
             LEFT JOIN categorias c ON t.categoria_id = c.id
             LEFT JOIN prioridades p ON t.prioridad_id = p.id
             LEFT JOIN estados e ON t.estado_id = e.id
@@ -248,7 +253,11 @@ class Ticket extends Model
      */
     public static function assignToOperator($ticketId, $operatorId)
     {
-        $estadoId = self::getEstadoIdByName('Asignado');
+        $estadoAsignado = Estado::findByName('Asignado');
+        
+        if (!$estadoAsignado) {
+            throw new \Exception('Estado "Asignado" no encontrado en la base de datos');
+        }
         
         $statement = self::connection()->prepare("
             UPDATE tickets 
@@ -259,7 +268,7 @@ class Ticket extends Model
         ");
         $statement->bindValue(':ticketId', $ticketId);
         $statement->bindValue(':operatorId', $operatorId);
-        $statement->bindValue(':estadoId', $estadoId);
+        $statement->bindValue(':estadoId', $estadoAsignado->id);
         return $statement->execute();
     }
 
@@ -268,7 +277,11 @@ class Ticket extends Model
      */
     public static function updateStatus($ticketId, $nuevoEstado)
     {
-        $estadoId = self::getEstadoIdByName($nuevoEstado);
+        $estado = Estado::findByName($nuevoEstado);
+        
+        if (!$estado) {
+            throw new \Exception("Estado '$nuevoEstado' no encontrado en la base de datos");
+        }
         
         $query = "UPDATE tickets SET estado_id = :estado_id";
         
@@ -280,7 +293,7 @@ class Ticket extends Model
         
         $statement = self::connection()->prepare($query);
         $statement->bindValue(':ticketId', $ticketId);
-        $statement->bindValue(':estado_id', $estadoId);
+        $statement->bindValue(':estado_id', $estado->id);
         return $statement->execute();
     }
 
@@ -302,24 +315,53 @@ class Ticket extends Model
     }
 
     /**
-     * Obtener ID del estado por nombre
-     */
-    private static function getEstadoIdByName($estadoName)
-    {
-        $statement = self::connection()->prepare("SELECT id FROM estados WHERE nombre = :nombre");
-        $statement->bindValue(':nombre', $estadoName);
-        $statement->execute();
-        $result = $statement->fetch(PDO::FETCH_OBJ);
-        return $result ? $result->id : null;
-    }
-
-    /**
      * Obtener todos los estados disponibles
      */
     public static function getAllEstados()
     {
-        $statement = self::connection()->prepare("SELECT * FROM estados WHERE activo = TRUE ORDER BY orden");
+        $statement = self::connection()->prepare("
+            SELECT * FROM estados 
+            WHERE activo = TRUE 
+            ORDER BY id
+        ");
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**
+     * Contar tickets por estado
+     */
+    public static function countByStatus($estadoNombre)
+    {
+        $statement = self::connection()->prepare("
+            SELECT COUNT(*) as total
+            FROM tickets t
+            INNER JOIN estados e ON t.estado_id = e.id
+            WHERE e.nombre = :estado
+        ");
+        $statement->bindValue(':estado', $estadoNombre);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_OBJ);
+        return $result->total;
+    }
+
+    /**
+     * Obtener estadísticas generales de tickets
+     */
+    public static function getStats()
+    {
+        $statement = self::connection()->prepare("
+            SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN e.nombre = 'No Asignado' THEN 1 ELSE 0 END) as no_asignados,
+                SUM(CASE WHEN e.nombre = 'Asignado' THEN 1 ELSE 0 END) as asignados,
+                SUM(CASE WHEN e.nombre = 'En Proceso' THEN 1 ELSE 0 END) as en_proceso,
+                SUM(CASE WHEN e.nombre = 'Solucionado' THEN 1 ELSE 0 END) as solucionados,
+                SUM(CASE WHEN e.nombre = 'Cerrado' THEN 1 ELSE 0 END) as cerrados
+            FROM tickets t
+            INNER JOIN estados e ON t.estado_id = e.id
+        ");
+        $statement->execute();
+        return $statement->fetch(PDO::FETCH_OBJ);
     }
 }

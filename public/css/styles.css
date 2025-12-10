@@ -5,7 +5,7 @@
   --primary-orange: #ff6b35;
   --primary-orange-dark: #e55a2b;
   --primary-orange-light: #ff8c5f;
-  --secondary-black: #1a1a1a;
+  --secondary-black: #0f0000;
   --dark-gray: #2d2d2d;
   --medium-gray: #404040;
   --light-gray: #e0e0e0;
@@ -481,8 +481,8 @@ footer {
 }
 
 .blob-1 {
-  width: 800px;
-  height: 800px;
+  width: 600px;
+  height: 600px;
   background: radial-gradient(circle, #ff6b35 0%, #ff8c5f 50%, transparent 70%);
   top: -250px;
   left: -250px;
@@ -490,8 +490,8 @@ footer {
 }
 
 .blob-2 {
-  width: 700px;
-  height: 700px;
+  width: 500px;
+  height: 500px;
   background: radial-gradient(circle, #ff8c5f 0%, #ffa366 50%, transparent 70%);
   bottom: -200px;
   right: -200px;
@@ -500,12 +500,11 @@ footer {
 }
 
 .blob-3 {
-  width: 700px;
-  height: 700px;
+  width: 450px;
+  height: 450px;
   background: radial-gradient(circle, #ff4500 0%, #ff6b35 50%, transparent 70%);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 22%;
+  left: 37%;
   animation-delay: 10s;
   animation-duration: 30s;
 }

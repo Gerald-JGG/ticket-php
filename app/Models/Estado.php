@@ -14,7 +14,7 @@ class Estado extends Model
     {
         $statement = self::connection()->prepare("
             SELECT * FROM estados 
-            ORDER BY orden
+            ORDER BY id
         ");
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_OBJ);
@@ -28,7 +28,7 @@ class Estado extends Model
         $statement = self::connection()->prepare("
             SELECT * FROM estados 
             WHERE activo = TRUE
-            ORDER BY orden
+            ORDER BY id
         ");
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_OBJ);
@@ -68,13 +68,12 @@ class Estado extends Model
     public static function create($data)
     {
         $statement = self::connection()->prepare("
-            INSERT INTO estados (nombre, descripcion, orden) 
-            VALUES (:nombre, :descripcion, :orden)
+            INSERT INTO estados (nombre, descripcion) 
+            VALUES (:nombre, :descripcion)
         ");
         
         $statement->bindValue(':nombre', $data['nombre']);
         $statement->bindValue(':descripcion', $data['descripcion'] ?? null);
-        $statement->bindValue(':orden', $data['orden']);
         
         return $statement->execute();
     }
@@ -87,15 +86,13 @@ class Estado extends Model
         $statement = self::connection()->prepare("
             UPDATE estados 
             SET nombre = :nombre, 
-                descripcion = :descripcion, 
-                orden = :orden
+                descripcion = :descripcion
             WHERE id = :id
         ");
         
         $statement->bindValue(':id', $id);
         $statement->bindValue(':nombre', $data['nombre']);
         $statement->bindValue(':descripcion', $data['descripcion'] ?? null);
-        $statement->bindValue(':orden', $data['orden']);
         
         return $statement->execute();
     }
@@ -163,12 +160,16 @@ class Estado extends Model
         
         $nombresEstados = $transiciones[$estadoActual];
         
+        if (empty($nombresEstados)) {
+            return [];
+        }
+        
         $placeholders = str_repeat('?,', count($nombresEstados) - 1) . '?';
         $statement = self::connection()->prepare("
             SELECT * FROM estados 
             WHERE nombre IN ($placeholders) 
             AND activo = TRUE
-            ORDER BY orden
+            ORDER BY id
         ");
         $statement->execute($nombresEstados);
         return $statement->fetchAll(PDO::FETCH_OBJ);
@@ -185,7 +186,7 @@ class Estado extends Model
             LEFT JOIN tickets t ON e.id = t.estado_id
             WHERE e.activo = TRUE
             GROUP BY e.id, e.nombre, e.descripcion
-            ORDER BY e.orden
+            ORDER BY e.id
         ");
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_OBJ);
