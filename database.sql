@@ -169,3 +169,13 @@ INSERT INTO prioridades (nombre, nivel, tiempo_respuesta_horas, color, descripci
 ('Alta', 2, 4, '#fd7e14', 'Problema serio que afecta el trabajo pero no detiene todo el servicio.'),
 ('Media', 3, 12, '#ffc107', 'Problema manejable o consulta técnica que afecta parcialmente al usuario.'),
 ('Baja', 4, 24, '#28a745', 'Solicitudes menores o preguntas que no requieren atención urgente.');
+
+ALTER TABLE estados ADD COLUMN color VARCHAR(7) NULL AFTER descripcion;
+
+-- Actualizar los colores
+UPDATE estados SET color = '#6c757d' WHERE nombre = 'No Asignado';
+UPDATE estados SET color = '#3b82f6' WHERE nombre = 'Asignado';
+UPDATE estados SET color = '#f59e0b' WHERE nombre = 'En Proceso';
+UPDATE estados SET color = '#9333ea' WHERE nombre = 'En Espera de Terceros';
+UPDATE estados SET color = '#10b981' WHERE nombre = 'Solucionado';
+UPDATE estados SET color = '#374151' WHERE nombre = 'Cerrado';

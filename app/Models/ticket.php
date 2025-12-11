@@ -20,7 +20,8 @@ class Ticket extends Model
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
-                   e.nombre as estado
+                   e.nombre as estado,
+                   e.color as estado_color
             FROM tickets t
             LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
             LEFT JOIN usuarios oa ON t.operador_asignado_id = oa.id
@@ -48,7 +49,8 @@ class Ticket extends Model
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
-                   e.nombre as estado
+                   e.nombre as estado,
+                   e.color as estado_color
             FROM tickets t
             LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
             LEFT JOIN usuarios oa ON t.operador_asignado_id = oa.id
@@ -101,7 +103,8 @@ class Ticket extends Model
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
-                   e.nombre as estado
+                   e.nombre as estado,
+                   e.color as estado_color
             FROM tickets t
             LEFT JOIN categorias c ON t.categoria_id = c.id
             LEFT JOIN prioridades p ON t.prioridad_id = p.id
@@ -138,7 +141,8 @@ class Ticket extends Model
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
-                   e.nombre as estado
+                   e.nombre as estado,
+                   e.color as estado_color
             FROM tickets t
             LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
             LEFT JOIN categorias c ON t.categoria_id = c.id
@@ -164,7 +168,8 @@ class Ticket extends Model
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
-                   e.nombre as estado
+                   e.nombre as estado,
+                   e.color as estado_color
             FROM tickets t
             LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
             LEFT JOIN categorias c ON t.categoria_id = c.id
@@ -203,7 +208,8 @@ class Ticket extends Model
                    c.color as categoria_color,
                    p.nombre as prioridad_nombre,
                    p.color as prioridad_color,
-                   e.nombre as estado
+                   e.nombre as estado,
+                   e.color as estado_color
             FROM tickets t
             LEFT JOIN usuarios uc ON t.usuario_creador_id = uc.id
             LEFT JOIN usuarios oa ON t.operador_asignado_id = oa.id

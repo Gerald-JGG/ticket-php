@@ -68,12 +68,13 @@ class Estado extends Model
     public static function create($data)
     {
         $statement = self::connection()->prepare("
-            INSERT INTO estados (nombre, descripcion) 
-            VALUES (:nombre, :descripcion)
+            INSERT INTO estados (nombre, descripcion, color) 
+            VALUES (:nombre, :descripcion, :color)
         ");
         
         $statement->bindValue(':nombre', $data['nombre']);
         $statement->bindValue(':descripcion', $data['descripcion'] ?? null);
+        $statement->bindValue(':color', $data['color'] ?? null);
         
         return $statement->execute();
     }
@@ -86,13 +87,15 @@ class Estado extends Model
         $statement = self::connection()->prepare("
             UPDATE estados 
             SET nombre = :nombre, 
-                descripcion = :descripcion
+                descripcion = :descripcion,
+                color = :color
             WHERE id = :id
         ");
         
         $statement->bindValue(':id', $id);
         $statement->bindValue(':nombre', $data['nombre']);
         $statement->bindValue(':descripcion', $data['descripcion'] ?? null);
+        $statement->bindValue(':color', $data['color'] ?? null);
         
         return $statement->execute();
     }
@@ -181,11 +184,11 @@ class Estado extends Model
     public static function getTicketStats()
     {
         $statement = self::connection()->prepare("
-            SELECT e.id, e.nombre, e.descripcion, COUNT(t.id) as total_tickets
+            SELECT e.id, e.nombre, e.descripcion, e.color, COUNT(t.id) as total_tickets
             FROM estados e
             LEFT JOIN tickets t ON e.id = t.estado_id
             WHERE e.activo = TRUE
-            GROUP BY e.id, e.nombre, e.descripcion
+            GROUP BY e.id, e.nombre, e.descripcion, e.color
             ORDER BY e.id
         ");
         $statement->execute();
