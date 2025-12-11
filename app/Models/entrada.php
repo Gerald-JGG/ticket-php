@@ -17,7 +17,9 @@ class Entrada extends Model
                    u.username as autor_nombre,
                    r.nombre as autor_rol,
                    ea.nombre as estado_anterior,
-                   en.nombre as estado_nuevo
+                   ea.color as estado_anterior_color,
+                   en.nombre as estado_nuevo,
+                   en.color as estado_nuevo_color
             FROM entradas e
             LEFT JOIN usuarios u ON e.autor_id = u.id
             LEFT JOIN roles r ON u.rol_id = r.id
@@ -90,7 +92,9 @@ class Entrada extends Model
                    u.username as autor_nombre,
                    r.nombre as autor_rol,
                    ea.nombre as estado_anterior,
-                   en.nombre as estado_nuevo
+                   ea.color as estado_anterior_color,
+                   en.nombre as estado_nuevo,
+                   en.color as estado_nuevo_color
             FROM entradas e
             LEFT JOIN usuarios u ON e.autor_id = u.id
             LEFT JOIN roles r ON u.rol_id = r.id
@@ -115,7 +119,9 @@ class Entrada extends Model
                    u.username as autor_nombre,
                    r.nombre as autor_rol,
                    ea.nombre as estado_anterior,
-                   en.nombre as estado_nuevo
+                   ea.color as estado_anterior_color,
+                   en.nombre as estado_nuevo,
+                   en.color as estado_nuevo_color
             FROM entradas e
             LEFT JOIN usuarios u ON e.autor_id = u.id
             LEFT JOIN roles r ON u.rol_id = r.id
@@ -141,7 +147,9 @@ class Entrada extends Model
             SELECT e.*, 
                    u.username as autor_nombre,
                    ea.nombre as estado_anterior,
-                   en.nombre as estado_nuevo
+                   ea.color as estado_anterior_color,
+                   en.nombre as estado_nuevo,
+                   en.color as estado_nuevo_color
             FROM entradas e
             LEFT JOIN usuarios u ON e.autor_id = u.id
             LEFT JOIN estados ea ON e.estado_anterior_id = ea.id
