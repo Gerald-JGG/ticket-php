@@ -122,7 +122,7 @@
                                         <i class="bi bi-hash"></i><?= $ticket->id ?>
                                     </span>
                                 </div>
-                                <span class="badge badge-<?= strtolower(str_replace(' ', '-', $ticket->estado)) ?>">
+                                <span class="badge" style="background-color: <?= htmlspecialchars($ticket->estado_color ?? '#6c757d') ?>">
                                     <?= htmlspecialchars($ticket->estado) ?>
                                 </span>
                             </div>

@@ -53,8 +53,8 @@
                                                 <i class="bi bi-hash"></i><?= $ticket->id ?>
                                             </span>
                                         </div>
-                                        <span class="badge bg-warning text-dark">
-                                            <i class="bi bi-hourglass-split"></i> No Asignado
+                                        <span class="badge" style="background-color: <?= htmlspecialchars($ticket->estado_color ?? '#6c757d') ?>">
+                                            <i class="bi bi-hourglass-split"></i> <?= htmlspecialchars($ticket->estado) ?>
                                         </span>
                                     </div>
 
@@ -183,7 +183,7 @@
                                                 <i class="bi bi-hash"></i><?= $ticket->id ?>
                                             </span>
                                         </div>
-                                        <span class="badge badge-<?= strtolower(str_replace(' ', '-', $ticket->estado)) ?>">
+                                        <span class="badge" style="background-color: <?= htmlspecialchars($ticket->estado_color ?? '#6c757d') ?>">
                                             <?= htmlspecialchars($ticket->estado) ?>
                                         </span>
                                     </div>
