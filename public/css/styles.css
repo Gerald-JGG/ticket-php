@@ -813,7 +813,7 @@ footer {
 
 .empty-state i {
   font-size: 5rem;
-  color: var(--primary-orange);
+  color: var(--white);
   margin-bottom: 1rem;
   opacity: 0.5;
 }

@@ -1,3 +1,3 @@
 # ticket-php
 
-# checar sesiones controladas correctamentes (mejores practicas)
+# colores para estados
