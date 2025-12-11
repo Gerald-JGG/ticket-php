@@ -128,3 +128,44 @@ CREATE TABLE evaluaciones (
     FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 1. INSERTAR ROLES
+INSERT INTO roles (nombre, descripcion, nivel_acceso) VALUES
+('Superadministrador', 'Acceso completo al sistema, gestión de usuarios y configuración', 100),
+('Operador', 'Personal de soporte técnico que atiende tickets', 50),
+('Usuario', 'Usuario final que crea tickets de soporte', 10);
+
+-- 2. INSERTAR DEPARTAMENTOS
+INSERT INTO departamentos (nombre, descripcion) VALUES
+('Tecnologías de Información', 'Departamento de TI y soporte técnico'),
+('Recursos Humanos', 'Gestión de personal y nómina'),
+('Contabilidad', 'Departamento financiero y contable'),
+('Ventas', 'Equipo comercial y ventas'),
+('Operaciones', 'Operaciones y logística');
+
+-- 3. INSERTAR ESTADOS
+INSERT INTO estados (nombre, descripcion) VALUES
+('No Asignado', 'Ticket recién creado, esperando asignación'),
+('Asignado', 'Ticket asignado a un operador'),
+('En Proceso', 'Operador trabajando en la solución'),
+('En Espera de Terceros', 'Esperando información adicional'),
+('Solucionado', 'Solución propuesta por el operador'),
+('Cerrado', 'Ticket cerrado y aceptado por el usuario');
+
+INSERT INTO usuarios (username, password, rol_id, email, departamento_id) VALUES
+('admin', '$2y$12$NPht9L5H8gtGxQZwIwZot.S2XACFngICHbkk6NEGBuocPqC5PoDFq', 1, 'admin@lospatitos.com', 1);
+
+INSERT INTO categorias (nombre, descripcion, color) VALUES
+('Soporte Técnico', 'Problemas relacionados con computadoras, rendimiento y fallos generales.', '#007bff'),
+('Redes', 'Conectividad, WiFi, routers, VPN y problemas de red.', '#28a745'),
+('Hardware', 'Fallas en equipos físicos: monitores, teclados, impresoras.', '#ffc107'),
+('Software', 'Errores, instalación o actualización de programas.', '#17a2b8'),
+('Accesos y Permisos', 'Solicitudes de creacion de usuarios y permisos.', '#6610f2'),
+('Administrativo', 'Solicitudes internas relacionadas con procesos administrativos.', '#fd7e14'),
+('Seguridad', 'Incidentes de seguridad, antivirus, accesos no autorizados.', '#dc3545');
+
+INSERT INTO prioridades (nombre, nivel, tiempo_respuesta_horas, color, descripcion) VALUES
+('Crítica', 1, 1, '#dc3545', 'Interrupción total del servicio o incidente grave que requiere atención inmediata.'),
+('Alta', 2, 4, '#fd7e14', 'Problema serio que afecta el trabajo pero no detiene todo el servicio.'),
+('Media', 3, 12, '#ffc107', 'Problema manejable o consulta técnica que afecta parcialmente al usuario.'),
+('Baja', 4, 24, '#28a745', 'Solicitudes menores o preguntas que no requieren atención urgente.');
