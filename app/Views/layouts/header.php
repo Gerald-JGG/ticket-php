@@ -42,11 +42,10 @@
                                     <a class="nav-link" href="/solicitudes">
                                         <i class="bi bi-person-lines-fill"></i> Solicitudes
                                         <?php
-                                        require_once __DIR__ . '/../../Models/SolicitudRegistro.php';
-                                        $pendientes = \App\Models\SolicitudRegistro::countByStatus('Pendiente');
-                                        if ($pendientes > 0):
+                                        $pendientesSolicitudes = \App\Models\SolicitudRegistro::countByStatus('Pendiente');
+                                        if ($pendientesSolicitudes > 0):
                                         ?>
-                                            <span class="badge bg-warning text-dark"><?= $pendientes ?></span>
+                                            <span class="badge bg-warning text-dark"><?= $pendientesSolicitudes ?></span>
                                         <?php endif; ?>
                                     </a>
                                 </li>
