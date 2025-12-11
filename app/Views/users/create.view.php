@@ -60,6 +60,29 @@
                                 <small class="text-muted">Mínimo 6 caracteres</small>
                             </div>
                         </div>
+                        
+                        <div class="col-md-12 mb-3">
+                            <label for="profile_image" class="form-label">
+                                <i class="bi bi-image"></i> Imagen de Perfil (Opcional)
+                            </label>
+                            <input type="file" 
+                                class="form-control" 
+                                id="profile_image" 
+                                name="profile_image" 
+                                accept="image/jpeg,image/png,image/gif,image/webp"
+                                onchange="previewNewImage(event)">
+                            <small class="text-muted">
+                                Formatos permitidos: JPG, PNG, GIF, WEBP. Tamaño máximo: 5MB
+                            </small>
+                            
+                            <!-- Preview de la imagen -->
+                            <div class="mt-3" id="image-preview-container" style="display: none;">
+                                <img id="image-preview" 
+                                    src="" 
+                                    alt="Vista previa" 
+                                    style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-orange);">
+                            </div>
+                        </div>
 
                         <div class="mb-3">
                             <label for="rol" class="form-label">
@@ -122,5 +145,21 @@
         </div>
     </div>
 </div>
+
+<script>
+function previewNewImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('image-preview').src = e.target.result;
+            document.getElementById('image-preview-container').style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('image-preview-container').style.display = 'none';
+    }
+}
+</script>
 
 <?php require __DIR__ . '/../layouts/footer.php'; ?>
