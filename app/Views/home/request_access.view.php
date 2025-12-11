@@ -128,19 +128,6 @@
                             <small class="text-muted">Mínimo 20 caracteres</small>
                         </div>
 
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i>
-                            <strong>¿Qué sucede después?</strong>
-                            <ul class="mb-0 mt-2 small">
-                                <li>Un administrador revisará tu solicitud</li>
-                                <li>Recibirás una notificación por email con la respuesta</li>
-                                <li>Si es aprobada, obtendrás tus credenciales de acceso</li>
-                                <li>Podrás iniciar sesión y crear tickets de soporte</li>
-                            </ul>
-                        </div>
-
-                        <hr>
-
                         <div class="d-flex justify-content-between gap-2">
                             <a href="/" class="btn btn-secondary">
                                 <i class="bi bi-arrow-left"></i> Volver al Inicio
