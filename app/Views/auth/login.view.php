@@ -61,11 +61,30 @@
                                    placeholder="Ingrese su contraseña"
                                    required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100 py-2">
+                        
+                        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
                             <i class="bi bi-box-arrow-in-right"></i> Ingresar
                         </button>
                     </form>
-                    <hr>
+
+                    <hr class="my-4">
+
+                    <!-- Nuevas opciones agregadas -->
+                    <div class="d-grid gap-2">
+                        <a href="/" class="btn btn-outline-secondary">
+                            <i class="bi bi-house"></i> Volver al Inicio
+                        </a>
+                        <a href="/request-access" class="btn btn-outline-orange">
+                            <i class="bi bi-person-plus"></i> ¿No tienes cuenta? Solicitar Acceso
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            Si no tienes una cuenta, solicita acceso y un administrador la revisará
+                        </small>
+                    </div>
                 </div>
             </div>
         </div>

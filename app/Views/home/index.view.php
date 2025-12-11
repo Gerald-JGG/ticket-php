@@ -33,11 +33,6 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#features">
-                            <i class="bi bi-stars"></i> Características
-                        </a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="#about">
                             <i class="bi bi-info-circle"></i> Acerca de
                         </a>
@@ -100,78 +95,6 @@
                 <div class="col-lg-6 hero-image">
                     <div class="floating-card">
                         <i class="bi bi-headset"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Features Section -->
-    <section id="features" class="features-section">
-        <div class="container">
-            <div class="section-header">
-                <h2>Características Principales</h2>
-                <p>Todo lo que necesitas para gestionar el soporte técnico de tu organización</p>
-            </div>
-
-            <div class="row g-4">
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-ticket-detailed"></i>
-                        </div>
-                        <h3>Gestión de Tickets</h3>
-                        <p>Crea, asigna y da seguimiento a tickets de soporte de manera eficiente con estados personalizables.</p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-people"></i>
-                        </div>
-                        <h3>Roles de Usuario</h3>
-                        <p>Sistema de roles completo: Usuarios, Operadores y Superadministradores con permisos específicos.</p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-chat-dots"></i>
-                        </div>
-                        <h3>Comunicación Fluida</h3>
-                        <p>Historial completo de conversaciones y actualizaciones en tiempo real para cada ticket.</p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-funnel"></i>
-                        </div>
-                        <h3>Filtros Avanzados</h3>
-                        <p>Busca y filtra tickets por estado, prioridad, categoría y operador asignado.</p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-exclamation-triangle"></i>
-                        </div>
-                        <h3>Prioridades</h3>
-                        <p>Clasifica tickets por urgencia: Crítica, Alta, Media y Baja con SLA definidos.</p>
-                    </div>
-                </div>
-
-                <div class="col-md-6 col-lg-4">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="bi bi-shield-check"></i>
-                        </div>
-                        <h3>Seguro y Confiable</h3>
-                        <p>Autenticación segura y control de acceso basado en roles para proteger tu información.</p>
                     </div>
                 </div>
             </div>
