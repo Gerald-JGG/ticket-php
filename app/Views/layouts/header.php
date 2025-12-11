@@ -38,6 +38,18 @@
                                         <i class="bi bi-people"></i> Usuarios
                                     </a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="/solicitudes">
+                                        <i class="bi bi-person-lines-fill"></i> Solicitudes
+                                        <?php
+                                        require_once __DIR__ . '/../../Models/SolicitudRegistro.php';
+                                        $pendientes = \App\Models\SolicitudRegistro::countByStatus('Pendiente');
+                                        if ($pendientes > 0):
+                                        ?>
+                                            <span class="badge bg-warning text-dark"><?= $pendientes ?></span>
+                                        <?php endif; ?>
+                                    </a>
+                                </li>
                             <?php endif; ?>
                             
                             <li class="nav-item dropdown">

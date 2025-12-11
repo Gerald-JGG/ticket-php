@@ -79,6 +79,21 @@ $router->add('POST', '/tickets/{id}/add-entry', 'TicketController@addEntry');
 $router->add('POST', '/tickets/{id}/accept-solution', 'TicketController@acceptSolution');
 $router->add('POST', '/tickets/{id}/reject-solution', 'TicketController@rejectSolution');
 
+// Perfil Routes
+$router->add('GET', '/perfil/edit', 'PerfilController@edit');
+$router->add('POST', '/perfil/update', 'PerfilController@update');
+$router->add('GET', '/perfil/delete-image', 'PerfilController@deleteImage');
+
+// Solicitudes Routes (Home - Usuarios No Registrados)
+$router->add('GET', '/request-access', 'HomeController@requestAccess');
+$router->add('POST', '/request-access', 'HomeController@submitRequest');
+
+// Solicitudes Routes (Admin)
+$router->add('GET', '/solicitudes', 'SolicitudController@index');
+$router->add('GET', '/solicitudes/{id}', 'SolicitudController@show');
+$router->add('POST', '/solicitudes/{id}/aprobar', 'SolicitudController@aprobar');
+$router->add('POST', '/solicitudes/{id}/rechazar', 'SolicitudController@rechazar');
+
 try {
     $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     $method = $_SERVER['REQUEST_METHOD'];
