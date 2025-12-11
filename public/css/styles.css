@@ -856,3 +856,13 @@ footer {
 .text-muted {
   color: var(--light-gray) !important;
 }
+
+.bg-danger {
+    background-color: #8b2e31 !important; 
+    color: #f0f0f0 !important;           
+}
+
+.bg-info {
+    background-color: #117a88 !important; 
+    color: #f0f0f0 !important;       
+}

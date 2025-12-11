@@ -60,7 +60,7 @@
                             <h6 class="ticket-title"><?= htmlspecialchars($ticket->titulo) ?></h6>
                             
                             <div class="ticket-meta">
-                                <span class="badge badge-type-<?= strtolower($ticket->tipo) ?>">
+                                <span class="badge <?= $ticket->tipo === 'Incidente' ? 'bg-danger' : 'bg-info' ?>">
                                     <i class="bi bi-<?= $ticket->tipo === 'Incidente' ? 'exclamation-triangle' : 'chat-dots' ?>"></i>
                                     <?= htmlspecialchars($ticket->tipo) ?>
                                 </span>
