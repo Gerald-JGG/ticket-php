@@ -39,7 +39,8 @@
                             <input type="text" 
                                    class="form-control" 
                                    value="<?= $user->id ?>" 
-                                   disabled>
+                                   disabled
+                                   style="background-color: #2b2b2b; color: #e0e0e0; border: 1px solid #555;">
                         </div>
 
                         <div class="row">

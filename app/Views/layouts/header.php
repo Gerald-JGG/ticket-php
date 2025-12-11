@@ -43,10 +43,28 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                                     aria-expanded="false">
-                                    <i class="bi bi-person-circle"></i> <?= htmlspecialchars($_SESSION['user']['username']) ?>
+                                    <?php
+                                    // Cargar imagen de perfil si existe
+                                    require_once __DIR__ . '/../../Models/ImagenPerfil.php';
+                                    $imagenUrl = \App\Models\ImagenPerfil::getProfileImageUrl($_SESSION['user']['id']);
+                                    ?>
+                                    <?php if ($imagenUrl !== '/img/default-avatar.png'): ?>
+                                        <img src="<?= $imagenUrl ?>" 
+                                             alt="Perfil" 
+                                             style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; margin-right: 0.5rem; border: 2px solid var(--primary-orange);">
+                                    <?php else: ?>
+                                        <i class="bi bi-person-circle"></i>
+                                    <?php endif; ?>
+                                    <?= htmlspecialchars($_SESSION['user']['username']) ?>
                                     <span class="badge"><?= htmlspecialchars($_SESSION['user']['rol']) ?></span>
                                 </a>
                                 <ul class="dropdown-menu dropdown-menu-end">
+                                    <li>
+                                        <a class="dropdown-item" href="/perfil/edit">
+                                            <i class="bi bi-person-gear"></i> Editar Perfil
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item" href="/logout">
                                             <i class="bi bi-box-arrow-right"></i> Cerrar Sesión

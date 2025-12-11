@@ -63,6 +63,11 @@ $router->add('POST', '/users/update/{id}', 'UsuarioController@update');
 $router->add('GET', '/users/deactivate/{id}', 'UsuarioController@deactivate');
 $router->add('GET', '/users/activate/{id}', 'UsuarioController@activate');
 
+// Perfil Routes
+$router->add('GET', '/perfil/edit', 'PerfilController@edit');
+$router->add('POST', '/perfil/update', 'PerfilController@update');
+$router->add('GET', '/perfil/delete-image', 'PerfilController@deleteImage');
+
 // Ticket Routes
 $router->add('GET', '/tickets', 'TicketController@index');
 $router->add('GET', '/tickets/create', 'TicketController@create');
