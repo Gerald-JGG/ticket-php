@@ -99,34 +99,35 @@ CREATE TABLE entradas (
     FOREIGN KEY (estado_nuevo_id) REFERENCES estados(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabla 9: Archivos Adjuntos 
--- (Testear para ver si enverdad esta bien así para subir archivos)
-CREATE TABLE archivos_adjuntos (
+-- Tabla 9: Para Imagenes de Perfil de Usuarios
+CREATE TABLE imagenes_perfil (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ticket_id INT NOT NULL,
-    entrada_id INT NULL,
-    usuario_id INT NOT NULL,
+    usuario_id INT NOT NULL UNIQUE,
     nombre_original VARCHAR(255) NOT NULL,
     nombre_guardado VARCHAR(255) NOT NULL,
     ruta VARCHAR(500) NOT NULL,
     tipo_mime VARCHAR(100) NOT NULL,
     tamano_bytes INT NOT NULL,
     fecha_subida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE,
-    FOREIGN KEY (entrada_id) REFERENCES entradas(id) ON DELETE CASCADE,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabla 10: Evaluaciones de Satisfacción
-CREATE TABLE evaluaciones (
+-- Tabla 10: Para Solicitudes de Registro de Usuarios
+CREATE TABLE solicitudes_registro (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    ticket_id INT NOT NULL,
-    usuario_id INT NOT NULL,
-    calificacion INT NOT NULL CHECK (calificacion BETWEEN 1 AND 5),
-    comentario TEXT NULL,
-    fecha_evaluacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id)
+    nombre_completo VARCHAR(150) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    username_solicitado VARCHAR(50) NOT NULL,
+    departamento_solicitado VARCHAR(100) NULL,
+    telefono VARCHAR(20) NULL,
+    motivo TEXT NOT NULL,
+    estado ENUM('Pendiente', 'Aprobada', 'Rechazada') DEFAULT 'Pendiente',
+    fecha_solicitud TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_respuesta TIMESTAMP NULL,
+    respondido_por INT NULL,
+    comentario_respuesta TEXT NULL,
+    FOREIGN KEY (respondido_por) REFERENCES usuarios(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 1. INSERTAR ROLES
@@ -179,3 +180,31 @@ UPDATE estados SET color = '#f59e0b' WHERE nombre = 'En Proceso';
 UPDATE estados SET color = '#9333ea' WHERE nombre = 'En Espera de Terceros';
 UPDATE estados SET color = '#10b981' WHERE nombre = 'Solucionado';
 UPDATE estados SET color = '#374151' WHERE nombre = 'Cerrado';
+
+ALTER TABLE estados 
+CHANGE estado_color color VARCHAR(7) NULL;
+
+UPDATE prioridades 
+SET color = '#8b2e31'
+WHERE nombre = 'Crítica';
+
+UPDATE prioridades 
+SET color = '#a65f2a'
+WHERE nombre = 'Alta';
+
+UPDATE prioridades 
+SET color = '#b59b32'
+WHERE nombre = 'Media';
+
+UPDATE prioridades 
+SET color = '#2d6a3a'
+WHERE nombre = 'Baja';
+
+
+UPDATE categorias SET color = '#0056b3' WHERE nombre = 'Soporte Técnico';
+UPDATE categorias SET color = '#1f7a33' WHERE nombre = 'Redes';
+UPDATE categorias SET color = '#b59b32' WHERE nombre = 'Hardware';
+UPDATE categorias SET color = '#117a88' WHERE nombre = 'Software';
+UPDATE categorias SET color = '#4b2e8c' WHERE nombre = 'Accesos y Permisos';
+UPDATE categorias SET color = '#a66319' WHERE nombre = 'Administrativo';
+UPDATE categorias SET color = '#8b2e31' WHERE nombre = 'Seguridad';
